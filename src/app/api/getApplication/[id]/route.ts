@@ -1,32 +1,37 @@
 import { NextResponse } from 'next/server';
-import { Application } from '../../applications'; // Ajusta la ruta según tu estructura
+import { Application } from '../../applications'; // Adjust the path as needed
 
-// Asegúrate de que el array global applications esté inicializado correctamente
+// Ensure the global applications array is correctly initialized
 globalThis.applications = globalThis.applications || [];
 
-// Accede al array global applications
+// Access the global applications array
 const applications: Application[] = globalThis.applications;
 
-export async function GET(req: Request, context: { params: { id: string } }) {
+export async function GET(req: Request) {
   try {
-    // Desenvuelve los params
-    const { id } = await context.params;
+    // Extract the search params from the request URL
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
 
-    // Convierte el id a un número
+    if (!id) {
+      return NextResponse.json({ error: 'Application ID is missing' }, { status: 400 });
+    }
+
+    // Convert the id to a number
     const applicationId = parseInt(id, 10);
 
-    // Busca la aplicación por su ID
+    // Find the application by its ID
     const application = applications.find((app) => app.id === applicationId);
 
-    // Si no se encuentra la aplicación, devuelve 404
+    // If the application is not found, return 404
     if (!application) {
       return NextResponse.json({ error: 'Application not found' }, { status: 404 });
     }
 
-    // Muestra todos los datos de la aplicación en la consola
+    // Log the application data
     console.log('Application Data:', application);
 
-    // Devuelve la aplicación encontrada
+    // Return the found application
     return NextResponse.json({ message: 'Application retrieved successfully', application }, { status: 200 });
   } catch (error) {
     console.error('Error retrieving application:', error);
