@@ -1,12 +1,6 @@
-import { Residency } from '@/types/types';
+import { FormData, Residency } from '@/types/types';
 import { useState, useEffect } from 'react';
 
-// Define the structure of formData
-interface FormData {
-  residency?: Residency; // Use Residency enum here
-}
-
-// Define the structure of props the component expects
 interface ResidencySelectionProps {
   formData: FormData;
   updateFormData: (data: Partial<FormData>) => void;
@@ -14,17 +8,15 @@ interface ResidencySelectionProps {
 }
 
 export function ResidencySelection({ formData, updateFormData, setIsNextDisabled }: ResidencySelectionProps) {
-  // Type the selectedOption state to be of type Residency or undefined
-  const [selectedOption, setSelectedOption] = useState<Residency | undefined>(Residency.Peru);
+  // Initialize selectedOption with formData.residency if it's available
+  const [selectedOption, setSelectedOption] = useState<Residency | undefined>(formData.residency || Residency.Peru);
 
-  // Handle changes to the selected residency option
   const handleOptionChange = (option: Residency) => {
     setSelectedOption(option);
     updateFormData({ residency: option });
   };
 
   useEffect(() => {
-    // Enable the "Next" button if an option is selected, disable otherwise
     if (selectedOption) {
       setIsNextDisabled(false);
     } else {
@@ -35,7 +27,6 @@ export function ResidencySelection({ formData, updateFormData, setIsNextDisabled
   return (
     <div className="text-center">
       <h2 className="text-2xl font-bold mb-6">Para empezar, ¿qué opción te describe mejor?</h2>
-      {/* Flex column on mobile (default), flex row on medium screens and above */}
       <div className="flex flex-col md:flex-row justify-center space-y-6 md:space-y-0 md:space-x-6">
         <div
           onClick={() => handleOptionChange(Residency.Extranjero)}

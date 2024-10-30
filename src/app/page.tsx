@@ -12,7 +12,7 @@ import { PartnerContributions } from "./_steps/partners-contributions";
 import FormReview from "./_steps/review";
 import { ProgressBar } from "@/components/progress-bar";
 import { SupportChat } from "@/components/support-chat";
-import { FormData, Partner } from "@/types/types";
+import { FormData } from "@/types/types";
 
 const STORAGE_KEY = "incorporationFormData";
 const STEP_KEY = "currentStep";
