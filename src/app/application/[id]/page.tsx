@@ -112,20 +112,22 @@ export default function Dashboard() {
   const { id } = useParams(); // Get the application ID from the URL params
 
   useEffect(() => {
-    // Fetch the application data using the ID
     const fetchApplication = async () => {
       try {
-        const response = await fetch(`/api/getApplication/${id}`); // Replace with your API endpoint
+        const response = await fetch(`/api/getApplication/${id}`);
         const data = await response.json();
 
-        if (data && data.application) {
-          setApplication(data.application.formData); // Access the correct nested formData
+        // Log the API response to confirm it's correct
+        console.log('API Response:', data);
+
+        if (data && data.formData) {
+          setApplication(data.formData); // Access formData directly from the response
           setSocialReasons([
-            data.application.formData?.razonSocial1 || '',
-            data.application.formData?.razonSocial2 || '',
-            data.application.formData?.razonSocial3 || '',
-            data.application.formData?.razonSocial4 || '',
-            data.application.formData?.razonSocial5 || '',
+            data.formData?.razonSocial1 || '',
+            data.formData?.razonSocial2 || '',
+            data.formData?.razonSocial3 || '',
+            data.formData?.razonSocial4 || '',
+            data.formData?.razonSocial5 || '',
           ]);
         }
       } catch (error) {
@@ -135,6 +137,13 @@ export default function Dashboard() {
 
     fetchApplication();
   }, [id]);
+
+
+
+  useEffect(() => {
+    console.log('Application state:', application);
+  }, [application]);
+
 
   const moveItem = (fromIndex: number, toIndex: number) => {
     const updatedList = [...socialReasons];

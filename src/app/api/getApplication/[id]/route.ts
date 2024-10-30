@@ -1,39 +1,38 @@
-import { NextResponse } from 'next/server';
-import { Application } from '../../applications'; // Adjust the path as needed
+import { NextRequest, NextResponse } from 'next/server';
+import { applications } from '../../applications'; // Adjust the path to match where your applications array is defined
 
-// Ensure the global applications array is correctly initialized
-globalThis.applications = globalThis.applications || [];
+export async function GET(request: NextRequest) {
+  const pathname = new URL(request.url).pathname;
+  const id = pathname.split('/').pop(); // Extracts the last part of the path as 'id'
 
-// Access the global applications array
-const applications: Application[] = globalThis.applications;
+  // Validate if ID is provided
+  if (!id) {
+      return NextResponse.json({ message: 'ID not provided' }, { status: 400 });
+  }
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+  const applicationId = parseInt(id, 10);
+
+  // Validate if the ID is a valid number
+  if (isNaN(applicationId)) {
+      return NextResponse.json({ message: 'Invalid ID' }, { status: 400 });
+  }
+
   try {
-    // Extract the dynamic id from params
-    const { id } = params;
+      // Find the application by its ID in the applications array
+      const application = applications.find(app => app.id === applicationId);
 
-    if (!id) {
-      return NextResponse.json({ error: 'Application ID is missing' }, { status: 400 });
-    }
+      // If no application is found, return 404
+      if (!application) {
+          return NextResponse.json({ message: 'Application not found' }, { status: 404 });
+      }
 
-    // Convert the id to a number
-    const applicationId = parseInt(id, 10);
+      // Log the application data to the console
+      console.log('Application Data:', application);
 
-    // Find the application by its ID
-    const application = applications.find((app) => app.id === applicationId);
-
-    // If the application is not found, return 404
-    if (!application) {
-      return NextResponse.json({ error: 'Application not found' }, { status: 404 });
-    }
-
-    // Log the application data
-    console.log('Application Data:', application);
-
-    // Return the found application
-    return NextResponse.json({ message: 'Application retrieved successfully', application }, { status: 200 });
+      // Return the application data if found
+      return NextResponse.json(application, { status: 200 });
   } catch (error) {
-    console.error('Error retrieving application:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+      console.error('Error fetching application:', error);
+      return NextResponse.json({ message: 'Error fetching application' }, { status: 500 });
   }
 }
