@@ -162,22 +162,47 @@ export function PartnerInformation({
     <div className="space-y-8 max-w-5xl mx-auto">
       {!showForm && (
         <div className="space-y-4 flex flex-col items-center">
-          <Label htmlFor="numPartners" className="text-2xl font-bold">
-            ¿Cuántos socios tiene tu empresa?
-          </Label>
-          <Input
-            id="numPartners"
-            type="number"
-            value={numPartners || ""}
-            onChange={(e) => setNumPartners(parseInt(e.target.value))}
-            placeholder="Ingresa el número de socios"
-            className="max-w-md text-center mx-auto border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
-          />
-          {numPartners < 2 && <p className="text-red-500">Debe haber al menos 2 socios.</p>}
-          <Button onClick={() => setShowForm(true)} disabled={numPartners < 2} className="mt-4 mx-auto text-white rounded-lg px-6 py-2 w-full">
-            Continuar
-          </Button>
-        </div>
+        <Label htmlFor="numPartners" className="text-2xl font-bold">
+          ¿Cuántos socios tiene tu empresa?
+        </Label>
+        <Input
+          id="numPartners"
+          type="number"
+          value={numPartners || ""}
+          onChange={(e) => setNumPartners(parseInt(e.target.value))}
+          placeholder="Ingresa el número de socios"
+          className="max-w-md text-center mx-auto border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
+        />
+      
+        {numPartners < 2 && (
+          <div className="flex items-center bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mt-4 w-full max-w-md rounded-lg">
+            <svg
+              className="w-5 h-5 text-blue-500 mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+              />
+            </svg>
+            <p className="text-sm">Debe haber al menos 2 socios.</p>
+          </div>
+        )}
+      
+        <Button
+          onClick={() => setShowForm(true)}
+          disabled={numPartners < 2}
+          className="mt-4 mx-auto text-white rounded-lg px-6 py-2 w-full"
+        >
+          Continuar
+        </Button>
+      </div>
+      
       )}
 
       {showForm && (
