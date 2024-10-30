@@ -119,14 +119,10 @@ export function ApplicantInformation({
       <div className="relative">
         <div className="flex space-x-2">
           {/* Tipo de Documento */}
-          <div className="relative flex-[0.2]" style={{ maxWidth: "80px" }}>
-            <Select
-            
-              onValueChange={handleDocumentTypeChange}
-              value={formData.documentType || ''}
-            >
+          <div className="relative" style={{ flex: "0 0 80px", maxWidth: "80px" }}>
+            <Select onValueChange={handleDocumentTypeChange} value={formData.documentType || ''}>
               <SelectTrigger id="documentType" className="border-2 border-gray-300 rounded-lg focus:border-blue-600">
-                <SelectValue placeholder="tipo de doc"  />
+                <SelectValue placeholder="tipo de doc" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="dni">DNI</SelectItem>
@@ -137,7 +133,7 @@ export function ApplicantInformation({
           </div>
 
           {/* Número de Documento */}
-          <div className="relative flex-[0.8]">
+          <div className="relative flex-grow">
             <Label
               htmlFor="documentNumber"
               className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10"
@@ -165,6 +161,7 @@ export function ApplicantInformation({
             )}
           </div>
         </div>
+
       </div>
 
       {/* Correo Electrónico */}
