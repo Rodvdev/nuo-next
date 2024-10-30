@@ -32,6 +32,7 @@ export function ApplicantInformation({
       formData.documentNumber &&
       formData.applicantEmail &&
       isValidEmail(formData.applicantEmail) &&
+      isValidPhoneNumber(formData.applicantPhone) &&  // Ensure phone number is valid
       isValidDocumentNumber(formData.documentType, formData.documentNumber);
     setIsNextDisabled(!isFormValid);
   }, [formData, setIsNextDisabled]);
@@ -41,6 +42,13 @@ export function ApplicantInformation({
     if (!email) return false;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  };
+
+  // Function to validate the phone number format (numeric only)
+  const isValidPhoneNumber = (phone: string | undefined): boolean => {
+    if (!phone) return false;
+    const phoneRegex = /^[0-9]+$/;
+    return phoneRegex.test(phone);
   };
 
   // Function to validate the document number based on document type
@@ -69,8 +77,8 @@ export function ApplicantInformation({
 
   return (
     <div className="space-y-6 max-w-[500px] mx-auto mt-9">
+      <h1 className="text-2xl font-bold">Ingrese sus datos personales</h1>
 
-<h1 className="text-2xl font-bold">Ingrese sus datos personales</h1>
       {/* Nombre */}
       <div className="relative">
         <Label
@@ -113,11 +121,12 @@ export function ApplicantInformation({
           {/* Tipo de Documento */}
           <div className="relative flex-[0.2]" style={{ maxWidth: "80px" }}>
             <Select
+            
               onValueChange={handleDocumentTypeChange}
               value={formData.documentType || ''}
             >
               <SelectTrigger id="documentType" className="border-2 border-gray-300 rounded-lg focus:border-blue-600">
-                <SelectValue />
+                <SelectValue placeholder="tipo de doc"  />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="dni">DNI</SelectItem>
@@ -178,6 +187,28 @@ export function ApplicantInformation({
         />
         {!isValidEmail(formData.applicantEmail) && formData.applicantEmail && (
           <p className="text-red-500">Ingrese un correo válido (ej. nombre@ejemplo.com).</p>
+        )}
+      </div>
+
+      {/* Teléfono */}
+      <div className="relative">
+        <Label
+          htmlFor="applicantPhone"
+          className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10"
+        >
+          Teléfono
+        </Label>
+        <Input
+          placeholder="Ingrese su número de teléfono"
+          id="applicantPhone"
+          type="tel"
+          maxLength={15}
+          value={formData.applicantPhone || ''}
+          onChange={(e) => handleInputChange('applicantPhone', e.target.value)}
+          className="border-2 border-gray-300 rounded-lg p-2 focus:border-blue-600 focus:outline-none"
+        />
+        {!isValidPhoneNumber(formData.applicantPhone) && formData.applicantPhone && (
+          <p className="text-red-500">Ingrese un número de teléfono válido.</p>
         )}
       </div>
     </div>
