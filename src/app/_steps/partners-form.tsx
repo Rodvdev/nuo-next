@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { XIcon } from "lucide-react";
 import { FormData, Partner, DocumentType, Residency } from "@/types/types";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 // Interface for the component props
 interface PartnerInformationProps {
@@ -224,7 +225,7 @@ export function PartnerInformation({
                                             />
                                         </DialogTrigger>
                                         <DialogContent>
-                                            <h2>¿Estás seguro que deseas eliminar al socio {partner.name}?</h2>
+                                            <DialogTitle>¿Estás seguro que deseas eliminar al socio {partner.name}?</DialogTitle>
                                             <DialogFooter>
                                                 <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
                                                     NO
