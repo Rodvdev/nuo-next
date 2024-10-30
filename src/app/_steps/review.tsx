@@ -9,6 +9,12 @@ import { useRouter } from 'next/navigation'; // Replacing useNavigate with useRo
 import { User, Building2, Users, DollarSign, Mail, Phone, FileText, Globe } from 'lucide-react';
 import { FormData } from "@/types/types";
 
+// Acceder a las variables de entorno
+const STEP_KEY = process.env.NEXT_PUBLIC_STEP_KEY || 'currentStep';
+const EXPIRATION_KEY = process.env.NEXT_PUBLIC_EXPIRATION_KEY || 'formExpiration';
+const EXPIRATION_TIME = Number(process.env.NEXT_PUBLIC_EXPIRATION_TIME) || 86400000;  // 24 horas en ms
+
+
 
 // Component for each draggable company name item
 function SocialReasonItem({
@@ -91,11 +97,14 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
         if (activeStep < steps.length) {
             setActiveStep((prevStep) => prevStep + 1);
         } else {
-            // Save form data to localStorage before navigating to confirmation
-            localStorage.setItem('formData', JSON.stringify(formData));
-            router.push('/confirmation'); // Navigate using Next.js router
+            // Clear form data from localStorage before navigating to confirmation
+            localStorage.removeItem('formData'); // Borra los datos del formulario
+            localStorage.removeItem(STEP_KEY);   // Borra el paso actual
+            localStorage.removeItem(EXPIRATION_KEY); // Borra la expiración del formulario
+            router.push('/confirmation'); // Navega a la página de confirmación
         }
     };
+    
 
     const handleGoBack = () => {
         if (activeStep === 1) goToStep(1);

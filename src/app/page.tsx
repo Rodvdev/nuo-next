@@ -15,10 +15,13 @@ import { SupportChat } from "@/components/support-chat";
 import { FormData } from "@/types/types";
 import { ArrowLeft } from "lucide-react";
 
-const STORAGE_KEY = "incorporationFormData";
-const STEP_KEY = "currentStep";
-const EXPIRATION_KEY = "formExpiration";
-const EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+const STORAGE_KEY = process.env.STORAGE_KEY || 'incorporationFormData';
+// Acceder a las variables de entorno
+const STEP_KEY = process.env.NEXT_PUBLIC_STEP_KEY || 'currentStep';
+const EXPIRATION_KEY = process.env.NEXT_PUBLIC_EXPIRATION_KEY || 'formExpiration';
+const EXPIRATION_TIME = Number(process.env.NEXT_PUBLIC_EXPIRATION_TIME) || 86400000;  // 24 horas en ms
+
 
 export default function IncorporationForm() {
   const [currentStep, setCurrentStep] = useState(1);
