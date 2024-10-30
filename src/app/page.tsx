@@ -1,101 +1,185 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { ApplicantInformation } from "./_steps/applicant-form";
+import { ResidencySelection } from "./_steps/residency-selection";
+import { CompanyTypeSelection } from "./_steps/company-type-selection";
+import { CorporatePurpose } from "./_steps/corporate-purpose";
+import { CEOSelection } from "./_steps/ceo-selection";
+import { PartnerInformation } from "./_steps/partners-form";
+import { PartnerContributions } from "./_steps/partners-contributions";
+import FormReview from "./_steps/review";
+import { ProgressBar } from "@/components/progress-bar";
+import { SupportChat } from "@/components/support-chat";
+import { FormData, Partner } from "@/types/types";
+
+const STORAGE_KEY = "incorporationFormData";
+const STEP_KEY = "currentStep";
+const EXPIRATION_KEY = "formExpiration";
+const EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+export default function IncorporationForm() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<FormData>({});
+  const [isNextDisabled, setIsNextDisabled] = useState(true);
+  const [showPartnersForm, setShowPartnersForm] = useState(false);
+
+  const totalSteps = 8;
+
+  // Load saved form data and step from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    const savedStep = localStorage.getItem(STEP_KEY);
+    const expiration = localStorage.getItem(EXPIRATION_KEY);
+
+    if (expiration) {
+      const expirationDate = new Date(parseInt(expiration));
+      if (expirationDate > new Date()) {
+        if (savedData) {
+          setFormData(JSON.parse(savedData));
+        }
+        if (savedStep) {
+          setCurrentStep(Number(savedStep));
+        }
+      } else {
+        // Data is expired, clear it
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STEP_KEY);
+        localStorage.removeItem(EXPIRATION_KEY);
+      }
+    }
+  }, []);
+
+  // Save form data and current step to localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+    const expirationDate = new Date().getTime() + EXPIRATION_TIME;
+    localStorage.setItem(EXPIRATION_KEY, expirationDate.toString());
+  }, [formData]);
+
+  useEffect(() => {
+    localStorage.setItem(STEP_KEY, currentStep.toString());
+    const expirationDate = new Date().getTime() + EXPIRATION_TIME;
+    localStorage.setItem(EXPIRATION_KEY, expirationDate.toString());
+  }, [currentStep]);
+
+  // Update formData by merging new step data
+  const updateFormData = (stepData: Partial<FormData>) => {
+    setFormData((prev) => ({ ...prev, ...stepData }));
+  };
+
+  const handleNext = () => {
+    setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+    setIsNextDisabled(true);
+  };
+
+  const handlePrevious = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
+
+  // Add an onStepClick handler for the ProgressBar
+  const handleStepClick = (step: number) => {
+    if (step <= currentStep) {
+      setCurrentStep(step);
+    }
+  };
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <ApplicantInformation
+            formData={formData}
+            updateFormData={updateFormData}
+            setIsNextDisabled={setIsNextDisabled}
+          />
+        );
+      case 2:
+        return (
+          <ResidencySelection
+            formData={formData}
+            updateFormData={updateFormData}
+            setIsNextDisabled={setIsNextDisabled}
+          />
+        );
+      case 3:
+        return (
+          <CompanyTypeSelection
+            formData={formData}
+            updateFormData={updateFormData}
+            setIsNextDisabled={setIsNextDisabled}
+          />
+        );
+      case 4:
+        return (
+          <CorporatePurpose
+            formData={formData}
+            updateFormData={updateFormData}
+            setIsNextDisabled={setIsNextDisabled}
+          />
+        );
+      case 5:
+        return (
+          <PartnerInformation
+            formData={formData}
+            updateFormData={updateFormData}
+            isNextDisabled={isNextDisabled}
+            setIsNextDisabled={setIsNextDisabled}
+            nextStep={handleNext}
+            showForm={showPartnersForm}
+            setShowForm={setShowPartnersForm}
+          />
+        );
+      case 6:
+        return (
+          <CEOSelection
+            formData={formData}
+            updateFormData={updateFormData}
+            setIsNextDisabled={setIsNextDisabled}
+          />
+        );
+      case 7:
+        return (
+          <PartnerContributions
+            formData={formData}
+            updateFormData={updateFormData}
+            setIsNextDisabled={setIsNextDisabled}
+          />
+
+        );
+      case 8:
+        return (
+          <FormReview
+            formData={formData}
+            goToStep={setCurrentStep}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="container mx-auto w-full h-screen flex flex-col justify-between">
+      <div className="flex-grow">
+        {currentStep > 1 && (
+          <Button onClick={handlePrevious}>Regresar</Button>
+        )}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        {/* Pass onStepClick to ProgressBar */}
+        <ProgressBar currentStep={currentStep} totalSteps={totalSteps} onStepClick={handleStepClick} />
+
+        <div>{renderStep()}</div>
+
+        {currentStep < totalSteps && (
+          <Button onClick={handleNext} disabled={isNextDisabled}>
+            Continuar
+          </Button>
+        )}
+      </div>
+
+      <SupportChat />
     </div>
   );
 }
