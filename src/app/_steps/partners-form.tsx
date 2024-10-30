@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent, DialogFooter } from "@/components/ui/dialog";
-import { XIcon } from 'lucide-react';
+import { XIcon } from "lucide-react";
 import { FormData, Partner, DocumentType, Residency } from "@/types/types";
 
 // Interface for the component props
@@ -20,7 +20,7 @@ interface PartnerInformationProps {
     setShowForm: (show: boolean) => void;
 }
 
-// Email validation function
+// Validation for email format
 const isValidEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -40,6 +40,7 @@ export function PartnerInformation({
     const [partnerToDelete, setPartnerToDelete] = useState<number | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+    // Updating partners based on residency and numPartners
     useEffect(() => {
         if (numPartners > 0) {
             const updatedPartners = Array.from({ length: numPartners }, (_, index) => {
@@ -68,7 +69,7 @@ export function PartnerInformation({
     }, [partners]);
 
     const validateForm = (partnersList: Partner[]) => {
-        const allFieldsFilled = partnersList.length >= 2 && partnersList.every(partner =>
+        const allFieldsFilled = partnersList.length >= 2 && partnersList.every((partner) =>
             partner.name &&
             partner.lastName &&
             partner.documentType &&
@@ -86,8 +87,8 @@ export function PartnerInformation({
         const updatedPartners = [...partners];
         updatedPartners[index] = { ...updatedPartners[index], [field]: value };
 
-        if (field === 'nationality' && value !== 'Otra') {
-            updatedPartners[index].otherNationality = '';
+        if (field === "nationality" && value !== "Otra") {
+            updatedPartners[index].otherNationality = "";
         }
 
         setPartners(updatedPartners);
@@ -107,13 +108,13 @@ export function PartnerInformation({
             updatedPartners[index] = {
                 name: '',
                 lastName: '',
-                documentType: formData.residency === Residency.Extranjero ? DocumentType.ForeignId : DocumentType.DNI,  // Assign a valid default value
+                documentType: formData.residency === Residency.Extranjero ? DocumentType.ForeignId : DocumentType.DNI,
                 documentNumber: '',
                 nationality: 'Peruano',
                 otherNationality: '',
                 email: '',
                 phone: '',
-                countryCode: '+51'
+                countryCode: '+51',
             };
             setPartners(updatedPartners);
             updateFormData({ partners: updatedPartners });
@@ -130,7 +131,7 @@ export function PartnerInformation({
             otherNationality: '',
             email: '',
             phone: '',
-            countryCode: '+51'
+            countryCode: '+51',
         };
         setPartners([...partners, newPartner]);
         setNumPartners(numPartners + 1);
@@ -171,6 +172,10 @@ export function PartnerInformation({
 
             {showForm && (
                 <>
+                    <div className="flex justify-end">
+                        <Button variant="ghost" onClick={handleBackToNumSelection} className="text-sm">Volver</Button>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {partners.map((partner, index) => (
                             <div key={index} className="space-y-4 rounded-lg bg-white hover:shadow-xl duration-200">
@@ -188,15 +193,18 @@ export function PartnerInformation({
                                             <DialogFooter>
                                                 <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>NO</Button>
                                                 <Button variant="destructive" onClick={() => {
-                                                    handleRemovePartner(partnerToDelete as number);
+                                                    if (partnerToDelete !== null) {
+                                                        handleRemovePartner(partnerToDelete); // Ensures partnerToDelete is a number
+                                                    }
                                                     setIsDialogOpen(false);
-                                                }}>SÍ</Button>
+                                                }}>
+                                                    SÍ
+                                                </Button>
                                             </DialogFooter>
                                         </DialogContent>
                                     </Dialog>
                                 </div>
 
-                                {/* Partner Fields */}
                                 <div className="grid grid-cols-1 gap-6">
                                     <div className="relative">
                                         <Label htmlFor={`name-${index}`} className="absolute -top-3 left-3 bg-white px-1 text-sm text-black-600 z-10">Nombre</Label>
@@ -220,8 +228,112 @@ export function PartnerInformation({
                                         />
                                     </div>
 
-                                    {/* Additional fields (e.g., nationality, document type, etc.) */}
-                                    {/* Add more fields as needed... */}
+                                    <div className="relative">
+                                        <Label htmlFor={`nationality-${index}`} className="absolute -top-3 left-3 bg-white px-1 text-sm text-black-600 z-10">Nacionalidad</Label>
+                                        <Select
+                                            onValueChange={(value) => handlePartnerChange(index, 'nationality', value)}
+                                            defaultValue={partner.nationality}
+                                        >
+                                            <SelectTrigger id={`nationality-${index}`} className="border-2 border-gray-300 rounded-lg focus:outline-none">
+                                                <SelectValue placeholder="Selecciona la nacionalidad" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Peruano">Peruano</SelectItem>
+                                                <SelectItem value="Extranjero">Extranjero</SelectItem>
+                                                <SelectItem value="Otra">Otra</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    {/* Tipo de Documento y Número */}
+                                    <div className="relative">
+                                        <div className="flex space-x-2">
+                                            {/* Tipo de Documento */}
+                                            <div className="relative flex-[0.2]" style={{ maxWidth: "80px" }}> {/* maxWidth ensures smaller size for the select */}
+                                                <Select
+                                                    onValueChange={(value) => handlePartnerChange(index, 'documentType', value)}
+                                                    defaultValue={partner.documentType || 'dni'}
+                                                >
+                                                    <SelectTrigger id={`documentType-${index}`} className="border-2 border-gray-300 rounded-lg focus:border-blue-600">
+                                                        <SelectValue placeholder="Selecciona el tipo de documento" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="dni">DNI</SelectItem>
+                                                        <SelectItem value="passport">Pasaporte</SelectItem>
+                                                        <SelectItem value="foreignId">Carné de Extranjería</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            {/* Número de Documento */}
+                                            <div className="relative flex-[0.8]">
+                                                <Label
+                                                    htmlFor={`documentNumber-${index}`}
+                                                    className="absolute -top-3 left-3 bg-white px-1 text-sm text-black-600 z-10">
+                                                    Número de Documento
+                                                </Label>
+                                                <Input
+                                                    placeholder="Número de documento"
+                                                    id={`documentNumber-${index}`}
+                                                    maxLength={partner.documentType === 'passport' ? 9 : 8}
+                                                    value={partner.documentNumber || ''}
+                                                    onChange={(e) => handlePartnerChange(index, 'documentNumber', e.target.value)}
+                                                    className="border-2 border-gray-300 rounded-lg p-2 focus:border-blue-600 focus:outline-none"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Celular con selección de país */}
+                                    <div className="relative">
+                                        <div className="flex space-x-2">
+
+                                            {/* Número de celular */}
+                                            <div className="relative flex-[0.8]">
+                                                <Label
+                                                    htmlFor={`phone-${index}`}
+                                                    className="absolute -top-3 left-3 bg-white px-1 text-sm text-black-600 z-10">Teléfono</Label>
+                                                <Input
+                                                    id={`phone-${index}`}
+                                                    type="tel"
+                                                    value={partner.phone}
+                                                    onChange={(e) => handlePartnerChange(index, 'phone', e.target.value)}
+                                                    placeholder="Ingrese el teléfono"
+                                                    className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {partner.nationality === 'Otra' && (
+                                        <div className="relative">
+                                            <Label htmlFor={`otherNationality-${index}`} className="absolute -top-3 left-3 bg-white px-1 text-sm text-black-600 z-10">
+                                                Especificar otra nacionalidad
+                                            </Label>
+                                            <Input
+                                                id={`otherNationality-${index}`}
+                                                value={partner.otherNationality}
+                                                onChange={(e) => handlePartnerChange(index, 'otherNationality', e.target.value)}
+                                                placeholder="Especifique otra nacionalidad"
+                                                className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div className="relative">
+                                        <Label htmlFor={`email-${index}`} className="absolute -top-3 left-3 bg-white px-1 text-sm text-black-600 z-10">Correo Electrónico</Label>
+                                        <Input
+                                            id={`email-${index}`}
+                                            value={partner.email || ""} // Ensure email is always a string
+                                            onChange={(e) => handlePartnerChange(index, 'email', e.target.value)}
+                                            placeholder="Ingrese el correo electrónico"
+                                            className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
+                                        />
+                                        {!isValidEmail(partner.email ?? "") && partner.email && (
+                                            <p className="text-red-500">Ingrese un correo válido (ej. nombre@ejemplo.com).</p>
+                                        )}
+                                    </div>
+
                                 </div>
                             </div>
                         ))}
