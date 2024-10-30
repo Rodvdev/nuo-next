@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkles } from 'lucide-react';
+import { FormData } from "@/types/types";
 
 // Define the stopwords
 const stopwords = [
@@ -10,17 +11,6 @@ const stopwords = [
     "un", "con", "por", "al", "como", "más", "sus", "su", "las", "los", "sobre",
     "etc", "se", "ha", "han", "es", "o", "pero", "entre", "esta", "este", "estas", "estos", "dedicada", "compañía", "compa"
 ];
-
-// Interface for formData
-interface FormData {
-    corporatePurpose?: string;
-    companyName?: string;
-    razonSocial1?: string;
-    razonSocial2?: string;
-    razonSocial3?: string;
-    razonSocial4?: string;
-    razonSocial5?: string;
-}
 
 // Interface for the component props
 interface CorporatePurposeProps {
@@ -172,13 +162,16 @@ export function CorporatePurpose({ formData, updateFormData, setIsNextDisabled }
             <div className="space-y-4">
                 <Label htmlFor="razonSocial">Ingresa 5 opciones para la Razón Social de tu empresa</Label>
                 {[1, 2, 3, 4, 5].map((num) => {
-                    const duplicate = duplicates.includes(formData[`razonSocial${num}` as keyof FormData] || '');
+                    // Ensure the value is treated as a string by using '|| ""' to handle undefined
+                    const razonSocialValue = formData[`razonSocial${num}` as keyof FormData] as string || '';
+
+                    const duplicate = duplicates.includes(razonSocialValue);
 
                     return (
                         <div className="relative" key={num}>
                             <Input
                                 id={`razonSocial-${num}`}
-                                value={formData[`razonSocial${num}` as keyof FormData] || ''}
+                                value={razonSocialValue} // Using the explicitly casted value
                                 placeholder={`Razón social opción ${num}`}
                                 onChange={(e) => handleInputChange(`razonSocial${num}` as keyof FormData, e.target.value)}
                                 className={`mt-2 pr-12 ${duplicate ? 'border-red-500' : ''}`} // Border color if duplicate
@@ -196,6 +189,7 @@ export function CorporatePurpose({ formData, updateFormData, setIsNextDisabled }
                     );
                 })}
             </div>
+
         </div>
     );
 }

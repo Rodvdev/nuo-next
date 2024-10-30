@@ -34,6 +34,7 @@ export enum DocumentType {
     companyType?: CompanyType;
     corporatePurpose?: string;
     ceo?: CEO;
+    companyName?: string;
     partners?: Partner[];
     razonSocial1?: string;
     razonSocial2?: string;

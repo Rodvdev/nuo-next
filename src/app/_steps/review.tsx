@@ -1,57 +1,14 @@
+'use client';
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation'; // Replacing useNavigate with useRouter from next/navigation
 import { User, Building2, Users, DollarSign, Mail, Phone, FileText, Globe } from 'lucide-react';
+import { FormData } from "@/types/types";
 
-// Define types for formData, partners, contributions, etc.
-interface Partner {
-    name?: string;
-    lastName?: string;
-    documentType?: string;
-    documentNumber?: string;
-    nationality?: string;
-    otherNationality?: string;
-    email?: string;
-    phone?: string;
-    countryCode?: string;
-    monetaryContribution?: string;
-    currency?: string;
-    nonMonetaryContributions?: NonMonetaryContribution[];
-    noContributions?: boolean;
-}
-
-interface NonMonetaryContribution {
-    nonMonetaryContribution: string;
-    nonMonetaryValue: string;
-    nonMonetaryCurrency: string;
-}
-
-interface FormData {
-    applicantFirstName?: string;
-    applicantLastName?: string;
-    applicantEmail?: string;
-    applicantPhone?: string;
-    applicantPhoneCode?: string;
-    documentType?: string;
-    documentNumber?: string;
-    residency?: string;
-    razonSocial1?: string;
-    razonSocial2?: string;
-    razonSocial3?: string;
-    razonSocial4?: string;
-    razonSocial5?: string;
-    ceo?: {
-        name?: string;
-        lastName?: string;
-        partner?: boolean;
-    };
-    corporatePurpose?: string;
-    companyType?: string;
-    partners?: Partner[];
-}
 
 // Component for each draggable company name item
 function SocialReasonItem({
@@ -97,7 +54,6 @@ function SocialReasonItem({
             <p className="text-lg font-semibold">{socialReason ? `${socialReason} ${companyType}` : 'N/A'}</p>
         </div>
     );
-
 }
 
 const steps = [
@@ -121,7 +77,7 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
         formData?.razonSocial5 || '',
     ]);
 
-    const navigate = useNavigate();
+    const router = useRouter(); // Using useRouter from next/navigation
 
     // Function to move items within the list
     const moveItem = (fromIndex: number, toIndex: number) => {
@@ -137,7 +93,7 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
         } else {
             // Save form data to localStorage before navigating to confirmation
             localStorage.setItem('formData', JSON.stringify(formData));
-            navigate('/confirmation');
+            router.push('/confirmation'); // Navigate using Next.js router
         }
     };
 
@@ -216,29 +172,24 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
                                         <p>{partner?.countryCode || "+51"} {partner?.phone || "N/A"}</p>
                                     </div>
                                     <div className="mt-4 border-t pt-4">
-                                        {partner.noContributions ? (
-                                            <div className="text-red-500 font-bold">No contributions</div>
-                                        ) : (
-                                            <>
-                                                {partner.monetaryContribution && (
-                                                    <div className="flex items-center space-x-3">
-                                                        <DollarSign className="text-gray-600" />
-                                                        <p><strong>Capital Contribution:</strong> {partner.currency} {partner.monetaryContribution || "N/A"}</p>
-                                                    </div>
-                                                )}
-                                                {(partner.nonMonetaryContributions?.length ?? 0) > 0 && (
-                                                    <div>
-                                                        <h4 className="font-semibold text-gray-700">Non-Monetary Contributions:</h4>
-                                                        {partner.nonMonetaryContributions?.map((contribution, idx) => (
-                                                            <div key={idx} className="pl-2 mb-2 border-l-2 border-gray-300">
-                                                                <p><strong>Description:</strong> {contribution.nonMonetaryContribution}</p>
-                                                                <p><strong>Value:</strong> {contribution.nonMonetaryCurrency} {contribution.nonMonetaryValue}</p>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
 
-                                            </>
+                                        {partner.monetaryContribution && (
+                                            <div className="flex items-center space-x-3">
+                                                <DollarSign className="text-gray-600" />
+                                                <p><strong>Capital Contribution:</strong> {partner.currency} {partner.monetaryContribution || "N/A"}</p>
+                                            </div>
+                                        )}
+                                        {(partner.nonMonetaryContributions?.length ?? 0) > 0 && (
+                                            <div>
+                                                <h4 className="font-semibold text-gray-700">Non-Monetary Contributions:</h4>
+                                                {partner.nonMonetaryContributions?.map((contribution, idx) => (
+                                                    <div key={idx} className="pl-2 mb-2 border-l-2 border-gray-300">
+                                                        <p><strong>Description:</strong> {contribution.nonMonetaryContribution}</p>
+                                                        <p><strong>Value:</strong> {contribution.nonMonetaryCurrency} {contribution.nonMonetaryValue}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+
                                         )}
                                     </div>
                                 </div>
