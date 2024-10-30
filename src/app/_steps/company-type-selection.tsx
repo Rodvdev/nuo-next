@@ -30,7 +30,7 @@ export function CompanyTypeSelection({ formData, updateFormData, setIsNextDisabl
   return (
     <div className="flex flex-col justify-center items-center text-center w-full max-w-6xl mx-auto h-full max-h-screen overflow-auto">
       <h2 className="text-2xl font-bold mb-6">¿Qué tipo de sociedad necesita tu empresa?</h2>
-      
+
       {/* Cambiar flex-col a flex-row en pantallas grandes */}
       <div className="flex flex-col md:flex-row justify-center space-y-6 md:space-y-0 md:space-x-8 w-full">
         {/* Opción SAC */}
@@ -56,13 +56,30 @@ export function CompanyTypeSelection({ formData, updateFormData, setIsNextDisabl
       <div className="mt-6">
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="link" className="text-600">¿No sabes cuál elegir?</Button>
+            <Button variant="link" className="text-600 flex items-center">
+              <svg
+                className="w-4 h-4 text-blue-600 mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                />
+              </svg>
+              ¿No sabes cuál elegir?
+            </Button>
           </DialogTrigger>
+
           <DialogContent>
             <DialogHeader>
               <DialogTitle>¿Qué tipo de sociedad debería elegir?</DialogTitle>
               <DialogDescription>
-                <strong>S.A.C. (Sociedad Anónima Cerrada):</strong> Ideal para empresas más pequeñas, donde las acciones no se cotizan públicamente. Proporciona flexibilidad y es más fácil de manejar.<br/><br/>
+                <strong>S.A.C. (Sociedad Anónima Cerrada):</strong> Ideal para empresas más pequeñas, donde las acciones no se cotizan públicamente. Proporciona flexibilidad y es más fácil de manejar.<br /><br />
                 <strong>S.A. (Sociedad Anónima):</strong> Es ideal para empresas grandes con varios accionistas. Las acciones pueden cotizarse en bolsa y permite una estructura organizacional más amplia.
               </DialogDescription>
             </DialogHeader>

@@ -9,7 +9,7 @@ interface ResidencySelectionProps {
 
 export function ResidencySelection({ formData, updateFormData, setIsNextDisabled }: ResidencySelectionProps) {
   // Initialize selectedOption with formData.residency if it's available
-  const [selectedOption, setSelectedOption] = useState<Residency | undefined>(formData.residency || Residency.Peru);
+  const [selectedOption, setSelectedOption] = useState<Residency | undefined>(formData.residency);
 
   const handleOptionChange = (option: Residency) => {
     setSelectedOption(option);

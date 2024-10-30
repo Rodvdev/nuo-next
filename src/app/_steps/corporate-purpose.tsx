@@ -114,8 +114,8 @@ export function CorporatePurpose({ formData, updateFormData, setIsNextDisabled }
     const duplicates = checkDuplicateRazonSocial();
 
     return (
-        <div className="max-w-3xl mx-auto space-y-6">
-            <h2 className="text-2xl font-bold mb-3">Cuéntanos más de tu empresa</h2>
+        <div className="max-w-3xl mx-auto space-y-3">
+            <h2 className="text-2xl font-bold">Cuéntanos más de tu empresa</h2>
 
             {/* Corporate purpose section */}
             <div className="relative">

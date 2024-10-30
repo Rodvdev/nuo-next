@@ -87,7 +87,7 @@ export function ApplicantInformation({
 
   return (
     <div className="space-y-6 max-w-[500px] mx-auto mt-9">
-      <h1 className="text-2xl font-bold">Ingrese sus datos personales</h1>
+      <h1 className="text-2xl font-bold text-center">Ingresa tus datos personales</h1>
 
       {/* Nombre */}
       <div className="relative">
@@ -202,8 +202,25 @@ export function ApplicantInformation({
           required
         />
         {!isValidEmail(formData.applicantEmail) && formData.applicantEmail && (
-          <p className="text-red-500">Ingrese un correo válido (ej. nombre@ejemplo.com).</p>
-        )}
+  <div className="flex items-center bg-red-100 border-l-4 border-red-500 text-red-700 p-2 mt-2 w-full rounded-lg">
+    <svg
+      className="w-4 h-4 text-red-500 mr-2"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+      />
+    </svg>
+    <p className="text-sm">Ingrese un correo válido (ej. nombre@ejemplo.com).</p>
+  </div>
+)}
+
       </div>
 
       {/* Teléfono */}

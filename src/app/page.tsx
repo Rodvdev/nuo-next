@@ -165,7 +165,7 @@ export default function IncorporationForm() {
   };
 
   return (
-    <div className="container mx-auto w-full flex flex-col justify-between">
+    <div className="container mx-auto w-full flex flex-col justify-between p-8">
       <div className="flex-grow">
         <div className="w-full max-h-[20vh] overflow-auto">
           <ProgressBar currentStep={currentStep} totalSteps={totalSteps} onStepClick={handleStepClick} />

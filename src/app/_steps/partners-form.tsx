@@ -33,6 +33,33 @@ const isValidPhoneNumber = (phone: string): boolean => {
     return phoneRegex.test(phone);
 };
 
+// Validation for document number based on document type
+const validateDocumentNumber = (type: string, number: string) => {
+    let error = '';
+    const isNumeric = /^[0-9]+$/.test(number);
+
+    switch (type) {
+        case 'dni':
+            if (!isNumeric || number.length !== 8) {
+                error = 'El DNI debe contener 8 números.';
+            }
+            break;
+        case 'foreignId':
+            if (!isNumeric || number.length !== 9) {
+                error = 'El Carné de Extranjería debe contener 9 números.';
+            }
+            break;
+        case 'passport':
+            if (number.length < 5) {
+                error = 'El Pasaporte debe tener al menos 5 caracteres.';
+            }
+            break;
+        default:
+            break;
+    }
+    return error;
+};
+
 export function PartnerInformation({
     formData,
     updateFormData,
@@ -46,6 +73,9 @@ export function PartnerInformation({
     const [numPartners, setNumPartners] = useState<number>(partners.length || 0);
     const [partnerToDelete, setPartnerToDelete] = useState<number | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    // Document number error state
+    const [documentErrors, setDocumentErrors] = useState<string[]>(Array(numPartners).fill(''));
 
     // Updating partners based on residency and numPartners
     useEffect(() => {
@@ -68,6 +98,7 @@ export function PartnerInformation({
 
             setPartners(updatedPartners);
             updateFormData({ partners: updatedPartners });
+            setDocumentErrors(Array(numPartners).fill('')); // Reset document errors
         }
     }, [numPartners, formData.residency]);
 
@@ -97,15 +128,48 @@ export function PartnerInformation({
     const handlePartnerChange = (index: number, field: keyof Partner, value: string) => {
         const updatedPartners = [...partners];
         updatedPartners[index] = { ...updatedPartners[index], [field]: value };
-
+    
+        if (field === "documentType") {
+            // Al cambiar el tipo de documento, validar el número de documento
+            const documentType = value ?? 'dni'; // Usar el operador de coalescencia nula para un valor predeterminado
+            const error = validateDocumentNumber(documentType, updatedPartners[index].documentNumber || ''); // Asegurarse de que el número de documento también sea un string
+            
+            setDocumentErrors((prevErrors) => {
+                const newErrors = [...prevErrors];
+                newErrors[index] = error; // Update error for the specific partner
+                return newErrors;
+            });
+        }
+    
         if (field === "nationality" && value !== "Otra") {
             updatedPartners[index].otherNationality = "";
         }
+    
+        setPartners(updatedPartners);
+        updateFormData({ partners: updatedPartners });
+        validateForm(updatedPartners);
+    };
+    
+
+    const handleDocumentNumberChange = (index: number, value: string) => {
+        const updatedPartners = [...partners];
+        updatedPartners[index].documentNumber = value;
+
+        // Validate document number if documentType is defined
+        const documentType = updatedPartners[index].documentType || 'dni'; // Valor predeterminado
+        const error = validateDocumentNumber(documentType, value);
+
+        setDocumentErrors((prevErrors) => {
+            const newErrors = [...prevErrors];
+            newErrors[index] = error; // Update error for the specific partner
+            return newErrors;
+        });
 
         setPartners(updatedPartners);
         updateFormData({ partners: updatedPartners });
         validateForm(updatedPartners);
     };
+
 
     const handleRemovePartner = (index: number) => {
         if (partners.length > 2) {
@@ -146,6 +210,7 @@ export function PartnerInformation({
         };
         setPartners([...partners, newPartner]);
         setNumPartners(numPartners + 1);
+        setDocumentErrors([...documentErrors, '']); // Add an empty error for the new partner
     };
 
     const handleNextStep = () => {
@@ -163,18 +228,17 @@ export function PartnerInformation({
                     </Label>
                     <Input
                         id="numPartners"
-                        type="text" // Usamos 'text' para tener más control con inputMode
+                        type="number" // Usamos 'number' para mejor control del teclado numérico
                         value={numPartners || ""}
                         onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, ""); // Solo permite números
-                            setNumPartners(parseInt(e.target.value))
+                            setNumPartners(parseInt(value) || 0); // Cambiado para usar el valor filtrado
                         }}
                         inputMode="numeric" // Esto mostrará el teclado numérico en dispositivos móviles
-                        pattern="[0-9]*"    // Asegura que solo se acepten números en navegadores compatibles
-                        placeholder="Ingresa el número de socios"
-                        className="max-w-md text-center mx-auto border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
+                        pattern="[0-9]*" // Asegura que solo se acepten números en navegadores compatibles
+                        placeholder="Ingresa el número"
+                        className="text-2xl max-w-xs text-center mx-auto border-2 border-gray-300 rounded-lg p-4 h-16 focus:outline-none w-full" // Ajustado el ancho y la altura
                     />
-
 
                     {numPartners < 2 && (
                         <div className="flex items-center bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mt-4 w-full max-w-md rounded-lg">
@@ -204,7 +268,6 @@ export function PartnerInformation({
                         Continuar
                     </Button>
                 </div>
-
             )}
 
             {showForm && (
@@ -289,7 +352,6 @@ export function PartnerInformation({
                                         </Select>
                                     </div>
 
-                                    {/* Tipo de Documento y Número */}
                                     <div className="relative">
                                         <div className="flex space-x-2">
                                             {/* Tipo de Documento */}
@@ -314,13 +376,34 @@ export function PartnerInformation({
                                                 <Input
                                                     placeholder="Número de documento"
                                                     id={`documentNumber-${index}`}
-                                                    maxLength={partner.documentType === "passport" ? 9 : 8}
+                                                    maxLength={partner.documentType === "passport" ? 20 : 9}
                                                     value={partner.documentNumber || ""}
-                                                    onChange={(e) => handlePartnerChange(index, "documentNumber", e.target.value)}
+                                                    onChange={(e) => handleDocumentNumberChange(index, e.target.value)}
                                                     className="border-2 border-gray-300 rounded-lg p-2 focus:border-blue-600 focus:outline-none"
                                                 />
+
                                             </div>
                                         </div>
+                                        {/* Validación del número de documento */}
+                                        {documentErrors[index] && (
+                                            <div className="flex items-center bg-red-100 border-l-4 border-red-500 text-red-700 p-2 mt-2 w-full rounded-lg">
+                                                <svg
+                                                    className="w-4 h-4 text-red-500 mr-2"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                                                    />
+                                                </svg>
+                                                <p className="text-sm">{documentErrors[index]}</p>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Celular con selección de país */}
@@ -340,40 +423,58 @@ export function PartnerInformation({
                                                     className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
                                                 />
                                                 {!isValidPhoneNumber(partner.phone ?? "") && partner.phone && (
-                                                    <p className="text-red-500">Ingrese un número de teléfono válido.</p>
+                                                    <div className="flex items-center bg-red-100 border-l-4 border-red-500 text-red-700 p-2 mt-2 w-full rounded-lg">
+                                                        <svg
+                                                            className="w-4 h-4 text-red-500 mr-2"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke="currentColor"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth="2"
+                                                                d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                                                            />
+                                                        </svg>
+                                                        <p className="text-sm">Ingrese un número de teléfono válido.</p>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
 
-                                    {partner.nationality === "Otra" && (
-                                        <div className="relative">
-                                            <Label htmlFor={`otherNationality-${index}`} className="absolute -top-3 left-3 bg-white px-1 text-sm text-black-600 z-10">
-                                                Especificar otra nacionalidad
-                                            </Label>
-                                            <Input
-                                                id={`otherNationality-${index}`}
-                                                value={partner.otherNationality}
-                                                onChange={(e) => handlePartnerChange(index, "otherNationality", e.target.value)}
-                                                placeholder="Especifique otra nacionalidad"
-                                                className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
-                                            />
-                                        </div>
-                                    )}
-
+                                    {/* Correo Electrónico */}
                                     <div className="relative">
                                         <Label htmlFor={`email-${index}`} className="absolute -top-3 left-3 bg-white px-1 text-sm text-black-600 z-10">
                                             Correo Electrónico
                                         </Label>
                                         <Input
                                             id={`email-${index}`}
-                                            value={partner.email || ""} // Ensure email is always a string
+                                            value={partner.email || ""}
                                             onChange={(e) => handlePartnerChange(index, "email", e.target.value)}
                                             placeholder="Ingrese el correo electrónico"
                                             className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
                                         />
                                         {!isValidEmail(partner.email ?? "") && partner.email && (
-                                            <p className="text-red-500">Ingrese un correo válido (ej. nombre@ejemplo.com).</p>
+                                            <div className="flex items-center bg-red-100 border-l-4 border-red-500 text-red-700 p-2 mt-2 w-full rounded-lg">
+                                                <svg
+                                                    className="w-4 h-4 text-red-500 mr-2"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                                                    />
+                                                </svg>
+                                                <p className="text-sm">Ingrese un correo válido (ej. nombre@ejemplo.com).</p>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
