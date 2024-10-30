@@ -129,7 +129,7 @@ export function ApplicantInformation({
       <div className="relative">
         <div className="flex space-x-2">
           {/* Tipo de Documento */}
-          <div className="relative flex-[0.2]" style={{ maxWidth: "80px" }}>
+          <div className="relative flex-shrink-0" style={{ maxWidth: "80px" }}>
             <Select onValueChange={handleDocumentTypeChange} value={formData.documentType || ''}>
               <SelectTrigger id="documentType" className="border-2 border-gray-300 rounded-lg focus:border-blue-600">
                 <SelectValue placeholder="tipo de doc" />
@@ -143,7 +143,7 @@ export function ApplicantInformation({
           </div>
 
           {/* Número de Documento */}
-          <div className="relative flex-[0.8]">
+          <div className="relative flex-grow">
             <Label
               htmlFor="documentNumber"
               className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10"
@@ -158,12 +158,30 @@ export function ApplicantInformation({
               onChange={(e) => handleDocumentNumberChange(e.target.value)}
               className="border-2 border-gray-300 rounded-lg p-2 focus:border-blue-600 focus:outline-none"
             />
-            {documentNumberError && (
-              <p className="text-red-500">{documentNumberError}</p>
-            )}
           </div>
         </div>
+
+        {documentNumberError && (
+          <div className="flex items-center bg-red-100 border-l-4 border-red-500 text-red-700 p-2 mt-2 w-full rounded-lg">
+            <svg
+              className="w-4 h-4 text-red-500 mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+              />
+            </svg>
+            <p className="text-sm">{documentNumberError}</p>
+          </div>
+        )}
       </div>
+
 
       {/* Correo Electrónico */}
       <div className="relative">
