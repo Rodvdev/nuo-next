@@ -1,40 +1,41 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { CheckCircle, ArrowRight } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react';
+import { CheckCircle, ArrowRight } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { useRouter, useParams } from 'next/navigation'; // Import useParams to get the ID
 
 export default function SubmissionConfirmation() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false)
+  const { id: applicationId } = useParams(); // Get the applicationId from the route params
+  const [isLoading, setIsLoading] = useState(false);
   const [countdown, setCountdown] = useState(20); // Initialize countdown to 20 seconds
 
-  // Automatically redirect to dashboard after countdown reaches 0
+  // Automatically redirect to the application page after countdown reaches 0
   useEffect(() => {
     const timer = countdown > 0 ? setInterval(() => {
       setCountdown((prev) => prev - 1);
     }, 1000) : null;
 
-    // Clear the interval if the countdown reaches 0 or if the component is unmounted
+    // Redirect to the application page when countdown reaches 0
     if (countdown === 0) {
-      router.push('/dashboard');
+      router.push(`/application/${applicationId}`);
     }
 
     return () => {
-      if (timer) clearInterval(timer);
+      if (timer) clearInterval(timer); // Clean up interval when component unmounts
     };
-  }, [countdown, router]);
+  }, [countdown, router, applicationId]);
 
-  const handleGoToDashboard = () => {
+  // Handle manual redirection to the application
+  const handleGoToApplication = () => {
     setIsLoading(true);
-    // Simulate a delay before redirecting to the dashboard
     setTimeout(() => {
-      router.push('/dashboard');
+      router.push(`/application/${applicationId}`);
     }, 1000);
-  }
+  };
 
   return (
     <div className="flex items-center justify-center bg-background min-h-100">
@@ -50,7 +51,7 @@ export default function SubmissionConfirmation() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-center text-muted-foreground">
-            We are processing your application. You will be redirected to the dashboard in 
+            We are processing your application. You will be redirected to the application page in 
             <span className="font-semibold text-blue-600"> {countdown} seconds</span>, or you can proceed manually.
           </p>
           <div className="space-y-2">
@@ -64,7 +65,7 @@ export default function SubmissionConfirmation() {
         <CardFooter>
           <Button 
             className="w-full" 
-            onClick={handleGoToDashboard}
+            onClick={handleGoToApplication}
             disabled={isLoading}
           >
             {isLoading ? (
@@ -74,7 +75,7 @@ export default function SubmissionConfirmation() {
               </>
             ) : (
               <>
-                Go to Dashboard
+                Go to Application
                 <ArrowRight className="ml-2 h-4 w-4" />
               </>
             )}
@@ -82,5 +83,5 @@ export default function SubmissionConfirmation() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

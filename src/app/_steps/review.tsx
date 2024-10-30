@@ -1,22 +1,18 @@
-'use client';
+'use client'
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { useRouter } from 'next/navigation'; // Replacing useNavigate with useRouter from next/navigation
+import { useRouter } from 'next/navigation';
 import { User, Building2, Users, DollarSign, Mail, Phone, FileText, Globe } from 'lucide-react';
 import { FormData } from "@/types/types";
 
-// Acceder a las variables de entorno
 const STEP_KEY = process.env.NEXT_PUBLIC_STEP_KEY || 'currentStep';
 const EXPIRATION_KEY = process.env.NEXT_PUBLIC_EXPIRATION_KEY || 'formExpiration';
-const EXPIRATION_TIME = Number(process.env.NEXT_PUBLIC_EXPIRATION_TIME) || 86400000;  // 24 horas en ms
 
-
-
-// Component for each draggable company name item
+// Componente para cada elemento de razón social
 function SocialReasonItem({
     socialReason,
     index,
@@ -48,7 +44,7 @@ function SocialReasonItem({
 
     return (
         <div
-            ref={(node: HTMLDivElement | null) => {
+            ref={(node) => {
                 if (node) {
                     drag(drop(node));
                 }
@@ -83,9 +79,10 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
         formData?.razonSocial5 || '',
     ]);
 
+    const [isSubmitting, setIsSubmitting] = useState(false);  // Estado de envío
     const router = useRouter(); // Using useRouter from next/navigation
 
-    // Function to move items within the list
+    // Función para mover elementos en la lista
     const moveItem = (fromIndex: number, toIndex: number) => {
         const updatedList = [...socialReasons];
         const [movedItem] = updatedList.splice(fromIndex, 1);
@@ -93,18 +90,49 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
         setSocialReasons(updatedList);
     };
 
-    const handleNextStep = () => {
+    interface CreateApplicationResponse {
+        message: string;
+        application: {
+            id: number;
+        };
+    }
+
+    const handleNextStep = async () => {
         if (activeStep < steps.length) {
             setActiveStep((prevStep) => prevStep + 1);
         } else {
-            // Clear form data from localStorage before navigating to confirmation
-            localStorage.removeItem('formData'); // Borra los datos del formulario
-            localStorage.removeItem(STEP_KEY);   // Borra el paso actual
-            localStorage.removeItem(EXPIRATION_KEY); // Borra la expiración del formulario
-            router.push('/confirmation'); // Navega a la página de confirmación
+            setIsSubmitting(true);
+            try {
+                const response = await fetch('/api/createApplication', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ formData }), // formData is accessed directly
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create application');
+                }
+
+                const data = await response.json();
+
+                //localStorage.removeItem('formData');
+                localStorage.removeItem(STEP_KEY);
+                localStorage.removeItem(EXPIRATION_KEY);
+
+                const applicationId = data.application.id;
+                router.push(`/confirmation/${applicationId}`);
+            } catch (error) {
+                console.error('Error creating application:', error);
+            } finally {
+                setIsSubmitting(false);
+            }
         }
     };
-    
+
+
+
 
     const handleGoBack = () => {
         if (activeStep === 1) goToStep(1);
@@ -198,7 +226,6 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
                                                     </div>
                                                 ))}
                                             </div>
-
                                         )}
                                     </div>
                                 </div>
@@ -222,8 +249,8 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
                 <Button variant="outline" onClick={handleGoBack} className="w-1/2 mr-2">
                     Edit
                 </Button>
-                <Button onClick={handleNextStep} className="w-1/2">
-                    {activeStep === steps.length ? "Send Application" : "Confirm"}
+                <Button onClick={() => handleNextStep()} className="w-1/2" disabled={isSubmitting}>
+                    {isSubmitting ? "Sending..." : activeStep === steps.length ? "Send Application" : "Confirm"}
                 </Button>
             </div>
         </div>
