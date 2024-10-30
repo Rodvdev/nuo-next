@@ -7,11 +7,10 @@ globalThis.applications = globalThis.applications || [];
 // Access the global applications array
 const applications: Application[] = globalThis.applications;
 
-export async function GET(req: Request) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
-    // Extract the search params from the request URL
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
+    // Extract the dynamic id from params
+    const { id } = params;
 
     if (!id) {
       return NextResponse.json({ error: 'Application ID is missing' }, { status: 400 });
