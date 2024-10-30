@@ -103,14 +103,6 @@ export default function Dashboard() {
         setSocialReasons(updatedList);
     };
 
-    const handleNextStep = () => {
-        if (activeStep < steps.length) {
-            setActiveStep((prevStep) => prevStep + 1);
-        } else {
-            router.push('/dashboard'); // Navigate to /dashboard on the final step
-        }
-    };
-
     const renderStepPreview = () => {
         if (!formData) {
             return <p>Loading...</p>;
