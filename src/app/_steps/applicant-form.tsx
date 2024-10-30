@@ -17,14 +17,12 @@ export function ApplicantInformation({
   updateFormData,
   setIsNextDisabled,
 }: ApplicantInformationProps) {
-  const [documentTypeError, setDocumentTypeError] = useState(false);
+  const [documentNumberError, setDocumentNumberError] = useState('');
 
-  // Handle input changes and update formData
   const handleInputChange = (field: keyof FormData, value: string) => {
     updateFormData({ [field]: value });
   };
 
-  // Validate the form to enable/disable the "Next" button
   useEffect(() => {
     const isFormValid =
       formData.applicantFirstName &&
@@ -32,47 +30,59 @@ export function ApplicantInformation({
       formData.documentNumber &&
       formData.applicantEmail &&
       isValidEmail(formData.applicantEmail) &&
-      isValidPhoneNumber(formData.applicantPhone) &&  // Ensure phone number is valid
-      isValidDocumentNumber(formData.documentType, formData.documentNumber);
-    setIsNextDisabled(!isFormValid);
-  }, [formData, setIsNextDisabled]);
+      isValidPhoneNumber(formData.applicantPhone) &&
+      !documentNumberError; // Validar también el error del número de documento
 
-  // Function to validate the email format
+    setIsNextDisabled(!isFormValid);
+  }, [formData, setIsNextDisabled, documentNumberError]);
+
   const isValidEmail = (email: string | undefined): boolean => {
     if (!email) return false;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  // Function to validate the phone number format (numeric only)
   const isValidPhoneNumber = (phone: string | undefined): boolean => {
     if (!phone) return false;
     const phoneRegex = /^[0-9]+$/;
     return phoneRegex.test(phone);
   };
 
-  // Function to validate the document number based on document type
-  const isValidDocumentNumber = (documentType: string | undefined, documentNumber: string | undefined): boolean => {
-    if (!documentType || !documentNumber) return false;
-
-    const lengthByType: Record<string, number | [number, number]> = {
-      dni: 8,           // DNI: Exactly 8 digits
-      passport: [6, 9], // Passport: Between 6 and 9 characters
-      foreignId: 9,     // Foreign ID: Exactly 9 characters
-    };
-
-    const length = lengthByType[documentType];
-
-    if (Array.isArray(length)) {
-      return documentNumber.length >= length[0] && documentNumber.length <= length[1];
-    }
-
-    return documentNumber.length === length;
-  };
-
   const handleDocumentTypeChange = (value: string) => {
     handleInputChange('documentType', value);
-    setDocumentTypeError(false);
+    setDocumentNumberError(''); // Reset error on document type change
+    validateDocumentNumber(value, formData.documentNumber || ''); // Validar el número de documento al cambiar el tipo
+  };
+
+  const validateDocumentNumber = (type: string, number: string) => {
+    let error = '';
+    const isNumeric = /^[0-9]+$/.test(number);
+
+    switch (type) {
+      case 'dni':
+        if (!isNumeric || number.length !== 8) {
+          error = 'El DNI debe contener 8 números.';
+        }
+        break;
+      case 'foreignId':
+        if (!isNumeric || number.length !== 9) {
+          error = 'El Carné de Extranjería debe contener 9 números.';
+        }
+        break;
+      case 'passport':
+        if (number.length < 5) { // Ejemplo: asumiendo que el pasaporte tiene al menos 5 caracteres
+          error = 'El Pasaporte debe tener al menos 5 caracteres.';
+        }
+        break;
+      default:
+        break;
+    }
+    setDocumentNumberError(error);
+  };
+
+  const handleDocumentNumberChange = (value: string) => {
+    handleInputChange('documentNumber', value);
+    validateDocumentNumber(formData.documentType || '', value);
   };
 
   return (
@@ -119,7 +129,7 @@ export function ApplicantInformation({
       <div className="relative">
         <div className="flex space-x-2">
           {/* Tipo de Documento */}
-          <div className="relative" style={{ flex: "0 0 80px", maxWidth: "80px" }}>
+          <div className="relative flex-[0.2]" style={{ maxWidth: "80px" }}>
             <Select onValueChange={handleDocumentTypeChange} value={formData.documentType || ''}>
               <SelectTrigger id="documentType" className="border-2 border-gray-300 rounded-lg focus:border-blue-600">
                 <SelectValue placeholder="tipo de doc" />
@@ -133,7 +143,7 @@ export function ApplicantInformation({
           </div>
 
           {/* Número de Documento */}
-          <div className="relative flex-grow">
+          <div className="relative flex-[0.8]">
             <Label
               htmlFor="documentNumber"
               className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10"
@@ -143,25 +153,16 @@ export function ApplicantInformation({
             <Input
               placeholder="Número de documento"
               id="documentNumber"
-              maxLength={formData.documentType === 'passport' ? 9 : 8}
+              maxLength={formData.documentType === 'passport' ? 20 : (formData.documentType === 'foreignId' ? 9 : 8)}
               value={formData.documentNumber || ''}
-              onChange={(e) => {
-                if (!formData.documentType) {
-                  setDocumentTypeError(true);
-                }
-                handleInputChange('documentNumber', e.target.value);
-              }}
+              onChange={(e) => handleDocumentNumberChange(e.target.value)}
               className="border-2 border-gray-300 rounded-lg p-2 focus:border-blue-600 focus:outline-none"
             />
-            {!documentTypeError && !isValidDocumentNumber(formData.documentType, formData.documentNumber) && formData.documentNumber && (
-              <p className="text-red-500">Número de documento inválido.</p>
-            )}
-            {documentTypeError && !isValidDocumentNumber(formData.documentType, formData.documentNumber) && formData.documentNumber && (
-              <p className="text-red-500">Seleccione un tipo de documento.</p>
+            {documentNumberError && (
+              <p className="text-red-500">{documentNumberError}</p>
             )}
           </div>
         </div>
-
       </div>
 
       {/* Correo Electrónico */}
@@ -201,13 +202,17 @@ export function ApplicantInformation({
           type="tel"
           maxLength={15}
           value={formData.applicantPhone || ''}
-          onChange={(e) => handleInputChange('applicantPhone', e.target.value)}
+          onChange={(e) => {
+            const numericValue = e.target.value.replace(/\D/g, ''); // Allow only numbers
+            handleInputChange('applicantPhone', numericValue);
+          }}
           className="border-2 border-gray-300 rounded-lg p-2 focus:border-blue-600 focus:outline-none"
         />
         {!isValidPhoneNumber(formData.applicantPhone) && formData.applicantPhone && (
-          <p className="text-red-500">Ingrese un número de teléfono válido.</p>
+          <p className="text-red-500">El número de teléfono debe contener solo dígitos.</p>
         )}
       </div>
+
     </div>
   );
 }
