@@ -14,7 +14,7 @@ export function ProgressBar({ currentStep, totalSteps, onStepClick }: ProgressBa
   };
 
   return (
-    <div className="space-y-2 mb-8 mx-auto">
+    <div className="space-y-2 mb-2 mt-6 mx-auto">
       {/* Números del paso actual y total */}
       <div className="text-sm font-medium text-gray-700 dark:text-gray-300 text-left ml-2">
         Step {currentStep} / {totalSteps}

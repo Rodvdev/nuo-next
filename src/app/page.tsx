@@ -13,6 +13,7 @@ import FormReview from "./_steps/review";
 import { ProgressBar } from "@/components/progress-bar";
 import { SupportChat } from "@/components/support-chat";
 import { FormData } from "@/types/types";
+import { ArrowLeft } from "lucide-react";
 
 const STORAGE_KEY = "incorporationFormData";
 const STEP_KEY = "currentStep";
@@ -161,22 +162,29 @@ export default function IncorporationForm() {
   };
 
   return (
-    <div className="container mx-auto w-full h-screen flex flex-col justify-between">
+    <div className="container mx-auto w-full flex flex-col justify-between">
       <div className="flex-grow">
-        {currentStep > 1 && (
-          <Button onClick={handlePrevious}>Regresar</Button>
-        )}
+        <div className="w-full max-h-[20vh] overflow-auto">
+          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} onStepClick={handleStepClick} />
+          {currentStep > 1 && (
+            <Button variant="link" className="flex items-center space-x-2" onClick={handlePrevious}>
+              <ArrowLeft size={20} />
+              <span>Regresar</span>
+            </Button>
+          )}
+        </div>
 
-        {/* Pass onStepClick to ProgressBar */}
-        <ProgressBar currentStep={currentStep} totalSteps={totalSteps} onStepClick={handleStepClick} />
+        <div className="w-full flex-grow overflow-auto">
+          {renderStep()}
+        </div>
 
-        <div>{renderStep()}</div>
-
-        {currentStep < totalSteps && (
-          <Button onClick={handleNext} disabled={isNextDisabled}>
-            Continuar
-          </Button>
-        )}
+        <div className={`w-full flex mt-4 max-h-[10vh] pb-40 ${currentStep === totalSteps ? 'justify-center' : 'justify-between'}`}>
+          {currentStep < totalSteps && currentStep !== 5 && (
+            <Button onClick={handleNext} className="mx-auto" disabled={isNextDisabled}>
+              Continuar
+            </Button>
+          )}
+        </div>
       </div>
 
       <SupportChat />
