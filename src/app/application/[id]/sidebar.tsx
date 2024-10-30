@@ -28,9 +28,8 @@ export const steps = [
 export type Step = {
     id: number;
     title: string;
-    icon: React.ComponentType<any>;
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; // More specific type for icons
 };
-
 
 interface SidebarProps {
     className?: string;
@@ -39,9 +38,9 @@ interface SidebarProps {
     setIsSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-
 export const Sidebar = ({ className, activeStep, setActiveStep, setIsSidebarOpen }: SidebarProps) => {
-    const router = useRouter()
+    const router = useRouter();
+
     const handleNextStep = () => {
         if (activeStep < steps.length) {
             setActiveStep((prevStep) => prevStep + 1);
