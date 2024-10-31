@@ -49,7 +49,7 @@ export default function Sidebar({ activeStep, setActiveStep, setIsSidebarOpen }:
 
       {/* Barra de Progreso */}
       <div className="px-4 py-4">
-        <strong className="text-gray-300">Progreso:</strong>
+        <strong className="text-gray-300">Progreso</strong>
         <Progress value={(activeStep / steps.length) * 100} className="mt-2 bg-gray-700 rounded-full" />
       </div>
     </div>
