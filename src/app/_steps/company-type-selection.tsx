@@ -36,7 +36,7 @@ export function CompanyTypeSelection({ formData, updateFormData, setIsNextDisabl
         {/* Opción SAC */}
         <div
           onClick={() => handleCompanyTypeChange(CompanyType.SAC)}
-          className={`border-2 rounded-lg p-8 w-full max-w-sm cursor-pointer transition-all hover:border-gray-600 ${selectedOption === CompanyType.SAC ? 'border-gray-500 bg-gray-50' : 'border-gray-300 bg-white'}`}
+          className={`border-2 rounded-lg p-6 w-full max-w-sm cursor-pointer transition-all hover:border-gray-600 ${selectedOption === CompanyType.SAC ? 'border-gray-500 bg-gray-50' : 'border-gray-300 bg-white'}`}
         >
           <h3 className="text-xl font-semibold">S.A.C. - Sociedad Anónima Cerrada</h3>
           <p className="text-base text-gray-600 mt-2">Ideal para pequeñas empresas con pocos accionistas. Las acciones no pueden ser cotizadas públicamente.</p>
@@ -45,7 +45,7 @@ export function CompanyTypeSelection({ formData, updateFormData, setIsNextDisabl
         {/* Opción SA */}
         <div
           onClick={() => handleCompanyTypeChange(CompanyType.SA)}
-          className={`border-2 rounded-lg p-8 w-full max-w-sm cursor-pointer transition-all hover:border-gray-600 ${selectedOption === CompanyType.SA ? 'border-gray-500 bg-gray-50' : 'border-gray-300 bg-white'}`}
+          className={`border-2 rounded-lg p-6 w-full max-w-sm cursor-pointer transition-all hover:border-gray-600 ${selectedOption === CompanyType.SA ? 'border-gray-500 bg-gray-50' : 'border-gray-300 bg-white'}`}
         >
           <h3 className="text-xl font-semibold">S.A. - Sociedad Anónima</h3>
           <p className="text-base text-gray-600 mt-2">Ideal para empresas más grandes, las acciones pueden cotizarse públicamente y permite una estructura más compleja.</p>
