@@ -25,41 +25,42 @@ export default function CompanyDashboardInfoStep({ application }: CompanyDashboa
   };
 
   return (
-    <div className="bp-6 rounded-lg max-w-md mx-auto text-gray-100">
+    <div className="bg-gradient-to-br from-gray-800 to-gray-600 p-6 rounded-lg shadow-lg max-w-md mx-auto border border-gray-300 text-white">
       {/* Encabezado de la compañía */}
-      <div className="flex items-center mb-4 space-x-3 mt-8">
+      <div className="flex items-center mb-4 space-x-3">
         <Building className="w-6 h-6 text-blue-400" />
-        <h1 className="text-xl font-semibold text-blue-300">Perfil Corporativo</h1>
+        <h1 className="text-xl font-semibold">Perfil Corporativo</h1>
       </div>
 
-      {/* Nombres de la empresa */}
+      {/* Nombres de la empresa con drag-and-drop */}
       <div className="mb-4">
         <h3 className="text-sm font-semibold text-gray-300 mb-1">Nombre Comercial</h3>
-        <h1 className="text-xl font-semibold text-blue-300">{application.companyName}</h1>
+        <h1 className="text-xl font-semibold">{application.companyName}</h1>
       </div>
 
       {/* Información básica de la compañía */}
-      <div className="p-3 pt-0 rounded-lg mb-1 shadow-inner space-y-2">
+      <div className="bg-gray-700 p-3 rounded-lg mb-3 shadow-inner border border-gray-500 space-y-2">
         <div className="flex items-center space-x-2">
-          <User className="w-5 h-5 text-blue-400" />
+          <User className="w-5 h-5 text-gray-400" />
           <InfoItem label="CEO" value={`${application.ceo.name} ${application.ceo.lastName}`} />
         </div>
         <div className="flex items-center space-x-2">
+          <Briefcase className="w-5 h-5 text-gray-400" />
           <InfoItem label="Propósito" value={application.corporatePurpose} />
         </div>
       </div>
 
-      {/* Razón social con drag-and-drop */}
+      {/* Nombres de la empresa con drag-and-drop */}
       <div className="mb-4">
         <h3 className="text-sm font-semibold text-gray-300 mb-1">Razón Social</h3>
         <DndProvider backend={HTML5Backend}>
-          <div className="p-3 rounded-lg shadow-inner border border-gray-500 flex flex-col gap-2">
+          <div className="bg-gray-700 p-3 rounded-lg shadow-inner border border-gray-500 flex flex-col gap-2">
             {Array.isArray(socialReasons) && socialReasons.map((socialReason, index) => (
               <SocialReasonItem
                 key={index}
                 index={index}
-                socialReason={socialReason || 'N/A'} // Valor por defecto si socialReason es undefined
-                companyType={application.companyType}
+                socialReason={socialReason}
+                companyType={application.companyType} // Pasar companyType aquí
                 moveItem={moveItem}
                 isVerifying={true}
               />

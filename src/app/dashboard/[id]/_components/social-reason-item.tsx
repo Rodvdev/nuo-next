@@ -42,7 +42,7 @@ const SocialReasonItem: React.FC<SocialReasonItemProps> = ({ socialReason, index
       <div className="flex items-center justify-center w-full">
         <p className="text-sm text-center">{`opción ${index + 1}`}</p>
         {isVerifying ? (
-          <Loader className="w-4 h-4 ml-2 text-sky-300 animate-spin" style={{ animationDuration: "2s" }} />
+          <Loader className="w-4 h-4 ml-2 text-sky-300 animate-spin" style={{ animationDuration: "3s" }} />
         ) : (
           <CheckCircle className="w-4 h-4 ml-2 text-green-500" />
         )}
