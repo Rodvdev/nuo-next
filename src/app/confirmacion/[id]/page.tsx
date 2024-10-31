@@ -21,7 +21,7 @@ export default function SubmissionConfirmation() {
 
     // Redirect to the application page when countdown reaches 0
     if (countdown === 0) {
-      router.push(`/solicitud/${applicationId}`);
+      router.push(`/dashboard/${applicationId}`);
     }
 
     return () => {
@@ -33,7 +33,7 @@ export default function SubmissionConfirmation() {
   const handleGoToApplication = () => {
     setIsLoading(true);
     setTimeout(() => {
-      router.push(`/solicitud/${applicationId}`);
+      router.push(`/dashboard/${applicationId}`);
     }, 1000);
   };
 
