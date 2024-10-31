@@ -51,6 +51,7 @@ export interface Partner {
   lastName?: string;
   documentType?: DocumentType;
   documentNumber?: string;
+  isCEO?: boolean;
   nationality?: string;
   otherNationality?: string;
   email?: string;
