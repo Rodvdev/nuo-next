@@ -18,6 +18,7 @@ export function ApplicantInformation({
   setIsNextDisabled,
 }: ApplicantInformationProps) {
   const [documentNumberError, setDocumentNumberError] = useState('');
+  const [documentTypeError, setDocumentTypeError] = useState('');
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     updateFormData({ [field]: value });
@@ -27,14 +28,16 @@ export function ApplicantInformation({
     const isFormValid =
       formData.applicantFirstName &&
       formData.applicantLastName &&
+      formData.documentType &&
       formData.documentNumber &&
       formData.applicantEmail &&
       isValidEmail(formData.applicantEmail) &&
       isValidPhoneNumber(formData.applicantPhone) &&
-      !documentNumberError; // Validar también el error del número de documento
+      !documentNumberError && 
+      !documentTypeError;
 
     setIsNextDisabled(!isFormValid);
-  }, [formData, setIsNextDisabled, documentNumberError]);
+  }, [formData, setIsNextDisabled, documentNumberError, documentTypeError]);
 
   const isValidEmail = (email: string | undefined): boolean => {
     if (!email) return false;
@@ -50,7 +53,7 @@ export function ApplicantInformation({
 
   const handleDocumentTypeChange = (value: string) => {
     handleInputChange('documentType', value);
-    setDocumentNumberError(''); // Reset error on document type change
+    setDocumentTypeError(''); // Reset error on document type change
     validateDocumentNumber(value, formData.documentNumber || ''); // Validar el número de documento al cambiar el tipo
   };
 
@@ -70,12 +73,12 @@ export function ApplicantInformation({
         }
         break;
       case 'passport':
-        if (number.length < 5) { // Ejemplo: asumiendo que el pasaporte tiene al menos 5 caracteres
+        if (number.length < 5) {
           error = 'El Pasaporte debe tener al menos 5 caracteres.';
         }
         break;
       default:
-        break;
+        error = 'Selecciona el tipo de documento.'; // Error si no hay tipo de documento seleccionado
     }
     setDocumentNumberError(error);
   };
@@ -132,7 +135,7 @@ export function ApplicantInformation({
           <div className="relative flex-shrink-0" style={{ maxWidth: "80px" }}>
             <Select onValueChange={handleDocumentTypeChange} value={formData.documentType || ''}>
               <SelectTrigger id="documentType" className="border-2 border-gray-300 rounded-lg focus:border-blue-600">
-                <SelectValue placeholder="tipo de doc" />
+                <SelectValue placeholder="Tipo de doc" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="dni">DNI</SelectItem>
@@ -141,6 +144,11 @@ export function ApplicantInformation({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Error si no hay tipo de documento seleccionado */}
+          {documentTypeError && (
+            <p className="text-red-500 text-sm">{documentTypeError}</p>
+          )}
 
           {/* Número de Documento */}
           <div className="relative flex-grow">
@@ -182,7 +190,6 @@ export function ApplicantInformation({
         )}
       </div>
 
-
       {/* Correo Electrónico */}
       <div className="relative">
         <Label
@@ -202,25 +209,24 @@ export function ApplicantInformation({
           required
         />
         {!isValidEmail(formData.applicantEmail) && formData.applicantEmail && (
-  <div className="flex items-center bg-red-100 border-l-4 border-red-500 text-red-700 p-2 mt-2 w-full rounded-lg">
-    <svg
-      className="w-4 h-4 text-red-500 mr-2"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
-      />
-    </svg>
-    <p className="text-sm">Ingrese un correo válido (ej. nombre@ejemplo.com).</p>
-  </div>
-)}
-
+          <div className="flex items-center bg-red-100 border-l-4 border-red-500 text-red-700 p-2 mt-2 w-full rounded-lg">
+            <svg
+              className="w-4 h-4 text-red-500 mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+              />
+            </svg>
+            <p className="text-sm">Ingrese un correo válido (ej. nombre@ejemplo.com).</p>
+          </div>
+        )}
       </div>
 
       {/* Teléfono */}
@@ -247,7 +253,6 @@ export function ApplicantInformation({
           <p className="text-red-500">El número de teléfono debe contener solo dígitos.</p>
         )}
       </div>
-
     </div>
   );
 }

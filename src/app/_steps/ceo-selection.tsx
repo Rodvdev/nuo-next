@@ -25,19 +25,25 @@ export function CEOSelection({
   const [ceoInfo, setCeoInfo] = useState<CEO>(formData.ceo || {});
   const [isNewCeo, setIsNewCeo] = useState(!formData.ceo?.partner);
   const [requiresLegalRep, setRequiresLegalRep] = useState(false);
+  const [documentError, setDocumentError] = useState("");
 
   useEffect(() => {
     if (ceoInfo.nationality && ceoInfo.documentType) {
       setRequiresLegalRep(
-        ceoInfo.nationality !== 'Peruano' &&
+        ceoInfo.nationality !== "Peruano" &&
         (ceoInfo.documentType === DocumentType.ForeignId || ceoInfo.documentType === DocumentType.Passport)
       );
     }
     validateForm(ceoInfo);
-  }, [ceoInfo.nationality, ceoInfo.documentType]);
+  }, [ceoInfo]);
 
   const handleCeoChange = (field: keyof CEO, value: string) => {
     const updatedCeo = { ...ceoInfo, [field]: value };
+
+    if (field === "documentType" || field === "documentNumber") {
+      const error = validateDocumentNumber(updatedCeo.documentType!, updatedCeo.documentNumber || "");
+      setDocumentError(error);
+    }
 
     setCeoInfo(updatedCeo);
     updateFormData({ ceo: updatedCeo });
@@ -78,6 +84,21 @@ export function CEOSelection({
     setIsNextDisabled(!(isCeoValid && isLegalRepValid));
   };
 
+  
+  const validateDocumentNumber = (type: DocumentType, number: string) => {
+    let error = "";
+    const isNumeric = /^[0-9]+$/.test(number);
+
+    if (type === DocumentType.DNI && (!isNumeric || number.length !== 8)) {
+      error = "El DNI debe contener 8 números.";
+    } else if (type === DocumentType.ForeignId && (!isNumeric || number.length !== 9)) {
+      error = "El Carnet de Extranjería debe contener 9 números.";
+    } else if (type === DocumentType.Passport && number.length < 5) {
+      error = "El Pasaporte debe tener al menos 5 caracteres.";
+    }
+    return error;
+  };
+
   return (
     <div className="space-y-6 overflow-hidden"> {/* Added overflow-hidden to prevent scroll */}
       <h3 className="text-2xl font-semibold">Elegir CEO</h3>
@@ -110,105 +131,128 @@ export function CEOSelection({
 
       {isNewCeo && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Nombre */}
-          <div className="relative">
-            <Label htmlFor="ceoName" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
-              Nombre
-            </Label>
-            <Input
-              id="ceoName"
-              value={ceoInfo.name || ''}
-              onChange={(e) => handleCeoChange('name', e.target.value)}
-              className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
-            />
-          </div>
+        <div className="relative">
+          <Label htmlFor="ceoName" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
+            Nombre
+          </Label>
+          <Input
+            id="ceoName"
+            value={ceoInfo.name || ""}
+            onChange={(e) => handleCeoChange("name", e.target.value)}
+            className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
+          />
+        </div>
 
-          {/* Apellidos */}
-          <div className="relative">
-            <Label htmlFor="ceoLastName" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
-              Apellidos
-            </Label>
-            <Input
-              id="ceoLastName"
-              value={ceoInfo.lastName || ''}
-              onChange={(e) => handleCeoChange('lastName', e.target.value)}
-              className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
-            />
-          </div>
+        <div className="relative">
+          <Label htmlFor="ceoLastName" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
+            Apellidos
+          </Label>
+          <Input
+            id="ceoLastName"
+            value={ceoInfo.lastName || ""}
+            onChange={(e) => handleCeoChange("lastName", e.target.value)}
+            className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
+          />
+        </div>
 
-          {/* Tipo de documento y número */}
-          <div className="flex flex-col md:flex-row md:space-x-4">
-            <div className="relative flex-1">
-              <Label htmlFor="ceoDocumentType" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
-                Tipo de documento
-              </Label>
-              <Select
-                onValueChange={(value) => handleCeoChange('documentType', value as DocumentType)}
-                defaultValue={ceoInfo.documentType}
-              >
-                <SelectTrigger id="ceoDocumentType" className="border-2 border-gray-300 rounded-lg focus:outline-none">
-                  <SelectValue placeholder="Selecciona el tipo de documento" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={DocumentType.Passport}>Pasaporte</SelectItem>
-                  <SelectItem value={DocumentType.DNI}>DNI</SelectItem>
-                  <SelectItem value={DocumentType.ForeignId}>Carnet de Extranjería</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+        {/* Campo de selección de nacionalidad */}
+        <div className="relative">
+          <Label htmlFor="ceoNationality" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
+            Nacionalidad
+          </Label>
+          <Select onValueChange={(value) => handleCeoChange("nationality", value)} defaultValue={ceoInfo.nationality}>
+            <SelectTrigger className="border-2 border-gray-300 rounded-lg focus:outline-none">
+              <SelectValue placeholder="Selecciona la nacionalidad" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Peruano">Peruano</SelectItem>
+              <SelectItem value="Extranjero">Extranjero</SelectItem>
+              <SelectItem value="Otra">Otra</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-            <div className="relative flex-1">
-              <Label htmlFor="ceoDocumentNumber" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
-                Número de documento
+        <div className="flex space-x-2">
+          <Select onValueChange={(value) => handleCeoChange("documentType", value as DocumentType)} defaultValue={ceoInfo.documentType}>
+            <SelectTrigger className="border-2 border-gray-300 rounded-lg focus:outline-none">
+              <SelectValue placeholder="Tipo de documento" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={DocumentType.DNI}>DNI</SelectItem>
+              <SelectItem value={DocumentType.ForeignId}>Carnet de Extranjería</SelectItem>
+              <SelectItem value={DocumentType.Passport}>Pasaporte</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Input
+            id="ceoDocumentNumber"
+            value={ceoInfo.documentNumber || ""}
+            onChange={(e) => handleCeoChange("documentNumber", e.target.value)}
+            placeholder="Número de documento"
+            className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
+          />
+        </div>
+
+        {documentError && <p className="text-red-500 text-sm">{documentError}</p>}
+
+        <div className="relative">
+          <Label htmlFor="ceoEmail" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
+            Correo Electrónico
+          </Label>
+          <Input
+            id="ceoEmail"
+            value={ceoInfo.email || ""}
+            onChange={(e) => handleCeoChange("email", e.target.value)}
+            className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
+          />
+          {!isValidEmail(ceoInfo.email || "") && ceoInfo.email && <p className="text-red-500">Correo inválido.</p>}
+        </div>
+
+        <div className="relative">
+          <Label htmlFor="ceoPhone" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
+            Teléfono
+          </Label>
+          <Input
+            id="ceoPhone"
+            value={ceoInfo.phone || ""}
+            onChange={(e) => handleCeoChange("phone", e.target.value)}
+            className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
+          />
+        </div>
+
+        {requiresLegalRep && (
+          <>
+            <div className="relative">
+              <Label htmlFor="legalRepName" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
+                Nombre del Representante Legal
               </Label>
               <Input
-                id="ceoDocumentNumber"
-                value={ceoInfo.documentNumber || ''}
-                onChange={(e) => handleCeoChange('documentNumber', e.target.value)}
+                id="legalRepName"
+                value={ceoInfo.legalRepName || ""}
+                onChange={(e) => handleCeoChange("legalRepName", e.target.value)}
                 className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
               />
             </div>
-          </div>
-
-          {/* Correo Electrónico */}
-          <div className="relative">
-            <Label htmlFor="CeoEmail" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
-              Correo Electrónico
-            </Label>
-            <Input
-              placeholder="Ingrese su correo electrónico"
-              id="CeoEmail"
-              type="email"
-              value={ceoInfo.email || ''}
-              onChange={(e) => handleCeoChange('email', e.target.value)}
-              className="border-2 border-gray-300 rounded-lg p-2 focus:border-blue-600 focus:outline-none w-full"
-              required={true}
-            />
-            {!isValidEmail(ceoInfo.email || '') && ceoInfo.email && (
-              <p className="text-red-500">Ingrese un correo válido (ej. nombre@ejemplo.com).</p>
-            )}
-          </div>
-
-          {/* Teléfono */}
-          <div className="relative">
-            <Label htmlFor="ceoPhone" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
-              Teléfono
-            </Label>
-            <Input
-              id="ceoPhone"
-              type="tel"
-              value={ceoInfo.phone || ''}
-              onChange={(e) => handleCeoChange('phone', e.target.value)}
-              className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
-            />
-          </div>
-        </div>
+            <div className="relative">
+              <Label htmlFor="legalRepEmail" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
+                Correo del Representante Legal
+              </Label>
+              <Input
+                id="legalRepEmail"
+                value={ceoInfo.legalRepEmail || ""}
+                onChange={(e) => handleCeoChange("legalRepEmail", e.target.value)}
+                className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
+              />
+            </div>
+          </>
+        )}
+      </div>
       )}
 
 
       {requiresLegalRep && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-          <h4 className="col-span-2 text-lg font-semibold text-red-600 flex items-center">
+          <h4 className="col-span-2 text-md font-semibold text-red-600 flex items-center">
             {/* SVG de advertencia */}
             <div className="flex items-center bg-red-100 border-l-4 border-red-500 text-red-700 p-2 rounded-lg">
               <svg

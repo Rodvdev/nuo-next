@@ -115,7 +115,27 @@ export function CorporatePurpose({ formData, updateFormData, setIsNextDisabled }
 
     return (
         <div className="max-w-3xl mx-auto space-y-3">
-            <h2 className="text-2xl font-bold">Cuéntanos más de tu empresa</h2>
+            <h2 className="text-2xl font-bold bg-blue-50 px-4 py-3 rounded-md shadow-sm border-b-4 border-blue-500">
+                Cuéntanos más de tu empresa
+            </h2>
+
+            {/* Company name section */}
+            <div className="relative">
+                <Label
+                    htmlFor="companyName"
+                    className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600"
+                >
+                    Nombre comercial
+                </Label>
+                <Input
+                    id="companyName"
+                    placeholder="Ingresa el nombre comercial de tu empresa"
+                    value={formData.companyName || ''}
+                    onChange={(e) => handleInputChange('companyName', e.target.value)}
+                    className="mt-4 pr-12"
+                />
+            </div>
+
 
             {/* Corporate purpose section */}
             <div className="relative">
@@ -141,26 +161,34 @@ export function CorporatePurpose({ formData, updateFormData, setIsNextDisabled }
                 {error && <p className="absolute bottom-1 right-3 text-xs text-red-500">{error}</p>}
             </div>
 
-            {/* Company name section */}
-            <div className="relative">
-                <Label
-                    htmlFor="companyName"
-                    className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600"
-                >
-                    Nombre comercial de tu empresa
-                </Label>
-                <Input
-                    id="companyName"
-                    placeholder="Ingresa el nombre comercial de tu empresa"
-                    value={formData.companyName || ''}
-                    onChange={(e) => handleInputChange('companyName', e.target.value)}
-                    className="mt-4 pr-12"
-                />
-            </div>
+            
 
             {/* Razon Social (5 options) */}
             <div className="space-y-4">
-                <Label htmlFor="razonSocial">Ingresa 5 opciones para la Razón Social de tu empresa</Label>
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg shadow-lg flex items-start space-x-3">
+                    <svg
+                        className="w-6 h-6 text-blue-500 mt-1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                        />
+                    </svg>
+                    <div>
+                        <p className="text-gray-800 font-semibold">Ingresa 5 opciones para la Razón Social de tu empresa</p>
+                        <p className="text-gray-600 text-sm">
+                        
+                        <Sparkles size={18} className="inline-block text-blue-600" />Sugerencia de IA: Estas opciones pueden ayudarte a encontrar un nombre distintivo para tu negocio.
+                        </p>
+                    </div>
+                </div>
+
                 {[1, 2, 3, 4, 5].map((num) => {
                     // Ensure the value is treated as a string by using '|| ""' to handle undefined
                     const razonSocialValue = formData[`razonSocial${num}` as keyof FormData] as string || '';
