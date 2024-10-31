@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Menu, X } from 'lucide-react';
+import { Menu, Users, X, Building2, User, FileText, CheckCircle } from 'lucide-react';
 import Sidebar from './sidebar';
 import ApplicantInfoStep from './_steps/applicant-info';
 import PartnersInfoStep from './_steps/partners-info';
