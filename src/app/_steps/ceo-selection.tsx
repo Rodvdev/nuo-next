@@ -100,7 +100,7 @@ export function CEOSelection({
   };
 
   return (
-    <div className="space-y-6 overflow-hidden"> {/* Added overflow-hidden to prevent scroll */}
+    <div className="space-y-4 overflow-hidden"> {/* Added overflow-hidden to prevent scroll */}
       <h3 className="text-2xl font-semibold">Elegir CEO</h3>
 
       <div>

@@ -115,9 +115,9 @@ export function CorporatePurpose({ formData, updateFormData, setIsNextDisabled }
 
     return (
         <div className="max-w-3xl mx-auto space-y-3">
-            <h2 className="text-2xl font-bold bg-blue-50 px-4 py-3 rounded-md shadow-sm border-b-4 border-blue-500">
+            <h1 className="text-2xl font-bold text-center">
                 Cuéntanos más de tu empresa
-            </h2>
+            </h1>
 
             {/* Company name section */}
             <div className="relative">

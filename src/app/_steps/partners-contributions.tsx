@@ -30,6 +30,7 @@ export function PartnerContributions({
     })) || []
   );
 
+  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState(true);
   const [expandedPartnerIndex, setExpandedPartnerIndex] = useState<number | null>(null);
   const [editingNonMonetaryIndex, setEditingNonMonetaryIndex] = useState<{ partnerIndex: number; contributionIndex: number } | null>(null);
 
@@ -85,6 +86,8 @@ export function PartnerContributions({
     updateFormData({ partners: updatedPartners });
   };
 
+
+
   const removeNonMonetaryContribution = (partnerIndex: number, contributionIndex: number) => {
     const updatedPartners = [...partners];
     updatedPartners[partnerIndex].nonMonetaryContributions?.splice(contributionIndex, 1);
@@ -120,6 +123,30 @@ export function PartnerContributions({
     setPartners(updatedPartners);
     updateFormData({ partners: updatedPartners });
   };
+
+  // Función para validar los campos antes de habilitar el botón
+  const validateInputs = () => {
+    if (expandedPartnerIndex !== null) {
+      const description = partners[expandedPartnerIndex].newNonMonetaryDescription || "";
+      const value = partners[expandedPartnerIndex].newNonMonetaryValue || "";
+
+      setIsAddButtonDisabled(description.trim() === "" || value.trim() === "");
+    } else {
+      setIsAddButtonDisabled(true); // Si no hay un socio expandido, deshabilitar el botón
+    }
+  };
+
+  useEffect(() => {
+    if (expandedPartnerIndex !== null) {
+      validateInputs();
+    }
+  }, [
+    expandedPartnerIndex,
+    expandedPartnerIndex !== null ? partners[expandedPartnerIndex]?.newNonMonetaryDescription : null,
+    expandedPartnerIndex !== null ? partners[expandedPartnerIndex]?.newNonMonetaryValue : null,
+  ]);
+
+
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
@@ -199,12 +226,15 @@ export function PartnerContributions({
                       {partners[expandedPartnerIndex].currency || "S/."}
                     </div>
                     <Input
+                      type="number"                              // Solo permite números y muestra el teclado numérico
                       placeholder="Monto"
                       value={partners[expandedPartnerIndex].monetaryContribution || ""}
                       onChange={(e) =>
                         handleContributionChange(expandedPartnerIndex, "monetaryContribution", e.target.value)
                       }
+                      inputMode="numeric"                        // Refuerza el teclado numérico en dispositivos móviles
                     />
+
                   </div>
                 </div>
 
@@ -227,11 +257,14 @@ export function PartnerContributions({
                         {partners[expandedPartnerIndex].nonMonetaryCurrency}
                       </div>
                       <Input
+                        type="number"
                         placeholder="Valor Estimado"
                         value={partners[expandedPartnerIndex].newNonMonetaryValue || ""}
                         onChange={(e) =>
                           handleContributionChange(expandedPartnerIndex, "newNonMonetaryValue", e.target.value)
                         }
+
+                        inputMode="numeric"
                       />
                     </div>
                     <Button
@@ -243,10 +276,12 @@ export function PartnerContributions({
                           partners[expandedPartnerIndex].nonMonetaryCurrency || Currency.Peruvian_Sol
                         );
                       }}
-                      className="bg-blue-600 text-white mt-2"
+                      className="bg-blue-600 text-white mt-2 w-full md:w-auto py-3 px-4 rounded-lg text-sm md:text-base font-semibold transition-colors duration-200 hover:bg-blue-700"
+                      disabled={isAddButtonDisabled} // Deshabilitar el botón si los campos no están completos
                     >
-                      + Agregar Aporte en especie
+                      + Agregar
                     </Button>
+
                   </div>
 
                   {partners[expandedPartnerIndex]?.nonMonetaryContributions &&
@@ -254,32 +289,38 @@ export function PartnerContributions({
                       <div className="space-y-2 mt-4">
                         <h5 className="font-semibold">Aportes en Especie Agregados</h5>
                         {partners[expandedPartnerIndex].nonMonetaryContributions.map((contribution, idx) => (
-                          <div key={idx} className="border rounded-lg p-4 bg-white flex justify-between items-center">
-                            <div>
+                          <div key={idx} className="border rounded-lg p-4 bg-white flex flex-col md:flex-row md:justify-between md:items-center mb-4">
+                            <div className="w-full md:w-auto mb-4 md:mb-0">
                               {editingNonMonetaryIndex?.partnerIndex === expandedPartnerIndex && editingNonMonetaryIndex.contributionIndex === idx ? (
-                                <>
+                                <div className="space-y-2">
                                   <Input
+                                    className="w-full"
+                                    placeholder="Descripción"
                                     value={contribution.nonMonetaryContribution}
                                     onChange={(e) => saveNonMonetaryContribution(expandedPartnerIndex, idx, "nonMonetaryContribution", e.target.value)}
                                   />
                                   <Input
+                                    className="w-full"
+                                    placeholder="Valor Estimado"
                                     value={contribution.nonMonetaryValue}
                                     onChange={(e) => saveNonMonetaryContribution(expandedPartnerIndex, idx, "nonMonetaryValue", e.target.value)}
                                   />
-                                </>
+                                </div>
                               ) : (
-                                <>
-                                  <p><strong>Descripción:</strong> {contribution.nonMonetaryContribution}</p>
-                                  <p><strong>Valor Estimado:</strong> {contribution.nonMonetaryCurrency} {contribution.nonMonetaryValue}</p>
-                                </>
+                                <div className="space-y-1">
+                                  <p className="text-sm md:text-base"><strong>Descripción:</strong> {contribution.nonMonetaryContribution}</p>
+                                  <p className="text-sm md:text-base"><strong>Valor Estimado:</strong> {contribution.nonMonetaryCurrency} {contribution.nonMonetaryValue}</p>
+                                </div>
                               )}
                             </div>
-                            <div className="flex space-x-2">
+
+                            <div className="flex space-x-2 justify-end md:justify-start">
                               {editingNonMonetaryIndex?.partnerIndex === expandedPartnerIndex && editingNonMonetaryIndex.contributionIndex === idx ? (
-                                <Button onClick={() => setEditingNonMonetaryIndex(null)}>Guardar</Button>
+                                <Button className="w-full md:w-auto" onClick={() => setEditingNonMonetaryIndex(null)}>Guardar</Button>
                               ) : (
                                 <Button
                                   variant="ghost"
+                                  className="w-full md:w-auto"
                                   onClick={() => startEditingNonMonetaryContribution(expandedPartnerIndex, idx)}
                                 >
                                   <EditIcon className="text-gray-600" />
@@ -287,6 +328,7 @@ export function PartnerContributions({
                               )}
                               <Button
                                 variant="destructive"
+                                className="w-full md:w-auto"
                                 onClick={() => removeNonMonetaryContribution(expandedPartnerIndex, idx)}
                               >
                                 <TrashIcon />
@@ -294,6 +336,7 @@ export function PartnerContributions({
                             </div>
                           </div>
                         ))}
+
                       </div>
                     )}
                 </div>

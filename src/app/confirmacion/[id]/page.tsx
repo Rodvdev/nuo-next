@@ -44,19 +44,19 @@ export default function SubmissionConfirmation() {
           <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4 mx-auto">
             <CheckCircle className="w-6 h-6" />
           </div>
-          <CardTitle className="text-2xl font-bold text-center">Submission Successful!</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">¡Envío Exitoso!</CardTitle>
           <CardDescription className="text-center">
-            Your company foundation application has been received.
+            Hemos recibido tu solicitud de constitución de empresa.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-center text-muted-foreground">
-            We are processing your application. You will be redirected to the application page in 
-            <span className="font-semibold text-blue-600"> {countdown} seconds</span>, or you can proceed manually.
+            Estamos procesando tu solicitud. Serás redirigido a la página de la solicitud en 
+            <span className="font-semibold text-blue-600"> {countdown} segundos</span>, o puedes proceder manualmente.
           </p>
           <div className="space-y-2">
             <div className="flex justify-between text-sm font-medium">
-              <span>Application Progress</span>
+              <span>Progreso de la Solicitud</span>
               <span>25%</span>
             </div>
             <Progress value={25} className="w-full" />
@@ -70,12 +70,12 @@ export default function SubmissionConfirmation() {
           >
             {isLoading ? (
               <>
-                <span className="mr-2">Loading...</span>
+                <span className="mr-2">Cargando...</span>
                 <Progress value={100} className="w-6 h-6 rounded-full" />
               </>
             ) : (
               <>
-                Go to Application
+                Ir a la Solicitud
                 <ArrowRight className="ml-2 h-4 w-4" />
               </>
             )}

@@ -91,7 +91,7 @@ function SocialReasonItem({ socialReason, index, moveItem, companyType, isVerify
       className={`flex flex-col items-center justify-center bg-gray-50 border border-gray-300 rounded-md shadow-sm w-full min-w-[150px] md:min-w-[200px] h-[50px] transition-transform ${isDragging ? 'opacity-50' : ''}`}
     >
       <div className="flex items-center justify-center w-full">
-        <p className="text-sm text-center">{`Company Name ${index + 1}`}</p>
+        <p className="text-sm text-center">{`Nombre de la Empresa ${index + 1}`}</p>
         {isVerifying ? (
           <Loader className="w-4 h-4 ml-2 text-yellow-500 animate-spin" />
         ) : (
@@ -138,12 +138,9 @@ export default function Dashboard() {
     fetchApplication();
   }, [id]);
 
-
-
   useEffect(() => {
     console.log('Application state:', application);
   }, [application]);
-
 
   const moveItem = (fromIndex: number, toIndex: number) => {
     const updatedList = [...socialReasons];
@@ -153,34 +150,34 @@ export default function Dashboard() {
   };
 
   const renderStepPreview = () => {
-    if (!application) return <p>Loading...</p>;
+    if (!application) return <p>Cargando...</p>;
 
     switch (activeStep) {
       case 1:
         return (
           <>
-            <InfoSection title="Applicant Information" description="Review your personal details">
-              <InfoItem label="Name" value={`${application.applicantFirstName} ${application.applicantLastName}`} />
+            <InfoSection title="Información del Solicitante" description="Revisa tus datos personales">
+              <InfoItem label="Nombre" value={`${application.applicantFirstName} ${application.applicantLastName}`} />
               <InfoItem label="Email" value={application.applicantEmail} />
-              <InfoItem label="Document Type" value={application.documentType} />
-              <InfoItem label="Document Number" value={application.documentNumber} />
-              <InfoItem label="Phone" value={`${application.applicantPhoneCode} ${application.applicantPhone}`} />
+              <InfoItem label="Tipo de Documento" value={application.documentType} />
+              <InfoItem label="Número de Documento" value={application.documentNumber} />
+              <InfoItem label="Teléfono" value={`${application.applicantPhoneCode} ${application.applicantPhone}`} />
             </InfoSection>
 
-            <InfoSection title="Residency Selection" description="Your selected residency status">
-              <InfoItem label="Residency" value={application.residency} />
+            <InfoSection title="Selección de Residencia" description="Tu estado de residencia seleccionado">
+              <InfoItem label="Residencia" value={application.residency} />
             </InfoSection>
           </>
         );
       case 2:
         return (
           <div className="p-6 shadow-sm">
-            <InfoSection title="About the Company" description="Corporate Purpose, CEO Information & Company Name">
+            <InfoSection title="Sobre la Empresa" description="Propósito Corporativo, Información del CEO y Nombre de la Empresa">
               <InfoItem label="CEO" value={`${application.ceo.name} ${application.ceo.lastName}`} />
-              <InfoItem label="Corporate Purpose" value={application.corporatePurpose} />
+              <InfoItem label="Propósito Corporativo" value={application.corporatePurpose} />
 
-              <h3 className="text-lg font-semibold">Company Names</h3>
-              <p className="text-sm text-gray-500">Drag to reorder the company names based on your preference</p>
+              <h3 className="text-lg font-semibold">Nombres de la Empresa</h3>
+              <p className="text-sm text-gray-500">Arrastra para reordenar los nombres de la empresa según tu preferencia</p>
               <DndProvider backend={HTML5Backend}>
                 <div className="flex flex-col gap-2 mt-3">
                   {socialReasons.map((socialReason, index) => (
@@ -201,26 +198,26 @@ export default function Dashboard() {
       case 3:
         return (
           <div className="p-6 shadow-sm mb-4">
-            <InfoSection title="Partner Information & Contributions" description="Details of company partners and their contributions">
+            <InfoSection title="Información de Socios y Aportes" description="Detalles de los socios de la empresa y sus aportes">
               {application.partners.map((partner, index) => (
                 <div key={index} className="p-4 border rounded-lg bg-gray-50 shadow-sm space-y-4">
-                  <InfoItem label="Name" value={`${partner.name} ${partner.lastName}`} />
-                  <InfoItem label="Document" value={`${partner.documentType} - ${partner.documentNumber}`} />
-                  <InfoItem label="Nationality" value={partner.nationality} />
+                  <InfoItem label="Nombre" value={`${partner.name} ${partner.lastName}`} />
+                  <InfoItem label="Documento" value={`${partner.documentType} - ${partner.documentNumber}`} />
+                  <InfoItem label="Nacionalidad" value={partner.nationality} />
                   <InfoItem label="Email" value={partner.email} />
-                  <InfoItem label="Phone" value={`${partner.countryCode} ${partner.phone}`} />
+                  <InfoItem label="Teléfono" value={`${partner.countryCode} ${partner.phone}`} />
                   {partner.monetaryContribution && (
-                    <InfoItem label="Capital Contribution" value={`${partner.currency} ${partner.monetaryContribution}`} />
+                    <InfoItem label="Aporte de Capital" value={`${partner.currency} ${partner.monetaryContribution}`} />
                   )}
                   {partner.nonMonetaryContributions?.length ? (
                     <>
-                      <h4 className="font-semibold text-gray-700">Non-Monetary Contributions:</h4>
+                      <h4 className="font-semibold text-gray-700">Aportes No Monetarios:</h4>
                       {partner.nonMonetaryContributions.map((contribution, idx) => (
-                        <InfoItem key={idx} label="Description" value={contribution.nonMonetaryContribution} />
+                        <InfoItem key={idx} label="Descripción" value={contribution.nonMonetaryContribution} />
                       ))}
                     </>
                   ) : (
-                    <p>No non-monetary contributions.</p>
+                    <p>No hay aportes no monetarios.</p>
                   )}
                 </div>
               ))}
@@ -234,21 +231,21 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* Mobile Menu */}
+      {/* Menú Móvil */}
       <div className="md:hidden flex justify-between items-center p-4 bg-gray-100">
-        <h1 className="text-xl font-semibold">Dashboard</h1>
-        <Button variant="ghost" onClick={() => setIsSidebarOpen(!isSidebarOpen)} aria-label="Toggle Menu">
+        <h1 className="text-xl font-semibold">Panel</h1>
+        <Button variant="ghost" onClick={() => setIsSidebarOpen(!isSidebarOpen)} aria-label="Alternar Menú">
           {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </Button>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
+        {/* Barra Lateral */}
         <aside className={`${isSidebarOpen ? "block" : "hidden"} md:block w-64 bg-white border-r fixed inset-y-0 z-20 md:static md:w-64 md:relative`}>
           <Sidebar activeStep={activeStep} setActiveStep={setActiveStep} setIsSidebarOpen={setIsSidebarOpen} />
         </aside>
 
-        {/* Main Content */}
+        {/* Contenido Principal */}
         <main className="flex-1 overflow-y-auto">
           <ScrollArea className="h-full">{renderStepPreview()}</ScrollArea>
         </main>
