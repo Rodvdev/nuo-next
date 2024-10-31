@@ -528,7 +528,7 @@ export function PartnerInformation({
 
                     <div className="flex justify-center mt-6">
                         <Button variant="secondary" onClick={handleAddPartner} className="w-full md:w-auto">
-                            Agregar Socio
+                            Agregar otro socio
                         </Button>
                     </div>
 
