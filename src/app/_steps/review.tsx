@@ -52,16 +52,16 @@ function SocialReasonItem({
             className={`flex flex-col items-center justify-center bg-gray-50 border border-gray-300 rounded-md shadow-sm w-full min-w-[150px] md:min-w-[200px] h-[50px] transition-transform ${isDragging ? 'opacity-50' : ''
                 }`}
         >
-            <p className="text-sm">{`Company Name ${index + 1}`}</p>
+            <p className="text-sm">{`Nombre de Empresa ${index + 1}`}</p>
             <p className="text-lg font-semibold">{socialReason ? `${socialReason} ${companyType}` : 'N/A'}</p>
         </div>
     );
 }
 
 const steps = [
-    { id: 1, title: "Applicant Information", icon: User },
-    { id: 2, title: "About the Company", icon: Building2 },
-    { id: 3, title: "Partner Information", icon: Users },
+    { id: 1, title: "Información del Solicitante", icon: User },
+    { id: 2, title: "Sobre la Empresa", icon: Building2 },
+    { id: 3, title: "Información de los Socios", icon: Users },
 ];
 
 interface FormReviewProps {
@@ -79,10 +79,9 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
         formData?.razonSocial5 || '',
     ]);
 
-    const [isSubmitting, setIsSubmitting] = useState(false);  // Estado de envío
-    const router = useRouter(); // Using useRouter from next/navigation
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const router = useRouter();
 
-    // Función para mover elementos en la lista
     const moveItem = (fromIndex: number, toIndex: number) => {
         const updatedList = [...socialReasons];
         const [movedItem] = updatedList.splice(fromIndex, 1);
@@ -108,31 +107,26 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ formData }), // formData is accessed directly
+                    body: JSON.stringify({ formData }),
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to create application');
+                    throw new Error('Error al crear la solicitud');
                 }
 
                 const data = await response.json();
-
-                //localStorage.removeItem('formData');
                 localStorage.removeItem(STEP_KEY);
                 localStorage.removeItem(EXPIRATION_KEY);
 
                 const applicationId = data.application.id;
-                router.push(`/confirmation/${applicationId}`);
+                router.push(`/confirmacion/${applicationId}`);
             } catch (error) {
-                console.error('Error creating application:', error);
+                console.error('Error al crear la solicitud:', error);
             } finally {
                 setIsSubmitting(false);
             }
         }
     };
-
-
-
 
     const handleGoBack = () => {
         if (activeStep === 1) goToStep(1);
@@ -142,29 +136,29 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
 
     const renderStepPreview = () => {
         switch (activeStep) {
-            case 1:
+            case 3:
                 return (
                     <div className="p-4 shadow-sm">
-                        <h2 className="text-2xl font-bold">Review your information</h2>
-                        <p><strong>Residency:</strong> {formData?.residency || "N/A"}</p>
-                        <p><strong>Name:</strong> {`${formData.applicantFirstName || "N/A"} ${formData.applicantLastName || "N/A"}`}</p>
-                        <p><strong>Email:</strong> {formData.applicantEmail || "N/A"}</p>
-                        <p><strong>Document Type:</strong> {formData.documentType || "N/A"}</p>
-                        <p><strong>Document Number:</strong> {formData.documentNumber || "N/A"}</p>
-                        <p><strong>Phone:</strong> {`${formData.applicantPhoneCode || "+51"} ${formData.applicantPhone || "N/A"}`}</p>
+                        <h2 className="text-2xl font-bold">Revisa tu Información</h2>
+                        <p><strong>Residencia:</strong> {formData?.residency || "N/A"}</p>
+                        <p><strong>Nombre:</strong> {`${formData.applicantFirstName || "N/A"} ${formData.applicantLastName || "N/A"}`}</p>
+                        <p><strong>Correo Electrónico:</strong> {formData.applicantEmail || "N/A"}</p>
+                        <p><strong>Tipo de Documento:</strong> {formData.documentType || "N/A"}</p>
+                        <p><strong>Número de Documento:</strong> {formData.documentNumber || "N/A"}</p>
+                        <p><strong>Teléfono:</strong> {`${formData.applicantPhoneCode || "+51"} ${formData.applicantPhone || "N/A"}`}</p>
                     </div>
                 );
-            case 2:
+            case 1:
                 return (
                     <div className="shadow-sm">
                         <h3 className="text-lg font-semibold">CEO</h3>
-                        <p>{`${formData?.ceo?.name || "N/A"} ${formData?.ceo?.lastName || "N/A"} ${formData?.ceo?.partner ? "(Partner)" : ""}`}</p>
+                        <p>{`${formData?.ceo?.name || "N/A"} ${formData?.ceo?.lastName || "N/A"} ${formData?.ceo?.partner ? "(Socio)" : ""}`}</p>
 
-                        <h3 className="text-lg font-semibold">Corporate Purpose</h3>
+                        <h3 className="text-lg font-semibold">Objeto Social</h3>
                         <p>{formData?.corporatePurpose || "N/A"}</p>
 
-                        <h3 className="text-lg font-semibold">Company Names</h3>
-                        <p className="text-sm text-gray-500">Drag to reorder the company names based on your preference</p>
+                        <h3 className="text-lg font-semibold">Nombres de Empresa</h3>
+                        <p className="text-sm text-gray-500">Arrastra para reordenar los nombres de la empresa según tu preferencia</p>
 
                         <DndProvider backend={HTML5Backend}>
                             <div className="flex flex-col gap-2 mt-3">
@@ -181,10 +175,10 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
                         </DndProvider>
                     </div>
                 );
-            case 3:
+            case 2:
                 return (
                     <div className="shadow-sm mb-4">
-                        <h2 className="text-2xl font-bold">Partner Information & Contributions</h2>
+                        <h2 className="text-2xl font-bold">Información y Aportes de los Socios</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {formData?.partners?.map((partner, index) => (
                                 <div key={index} className="p-4 border rounded-lg bg-gray-50 shadow-sm space-y-4">
@@ -209,27 +203,26 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
                                         <p>{partner?.countryCode || "+51"} {partner?.phone || "N/A"}</p>
                                     </div>
                                     <div className="mt-4 border-t pt-4">
-
                                         {partner.monetaryContribution && (
                                             <div className="flex items-center space-x-3">
                                                 <DollarSign className="text-gray-600" />
-                                                <p><strong>Capital Contribution:</strong> {partner.currency} {partner.monetaryContribution || "N/A"}</p>
+                                                <p><strong>Aporte de Capital:</strong> {partner.currency} {partner.monetaryContribution || "N/A"}</p>
                                             </div>
                                         )}
                                         {(partner.nonMonetaryContributions?.length ?? 0) > 0 && (
                                             <div>
-                                                <h4 className="font-semibold text-gray-700">Non-Monetary Contributions:</h4>
+                                                <h4 className="font-semibold text-gray-700">Aportes No Dinerarios:</h4>
                                                 {partner.nonMonetaryContributions?.map((contribution, idx) => (
                                                     <div key={idx} className="pl-2 mb-2 border-l-2 border-gray-300">
-                                                        <p><strong>Description:</strong> {contribution.nonMonetaryContribution}</p>
-                                                        <p><strong>Value:</strong> {contribution.nonMonetaryCurrency} {contribution.nonMonetaryValue}</p>
+                                                        <p><strong>Descripción:</strong> {contribution.nonMonetaryContribution}</p>
+                                                        <p><strong>Valor:</strong> {contribution.nonMonetaryCurrency} {contribution.nonMonetaryValue}</p>
                                                     </div>
                                                 ))}
                                             </div>
                                         )}
                                     </div>
                                 </div>
-                            )) || <p>No partners available</p>}
+                            )) || <p>No hay socios disponibles</p>}
                         </div>
                     </div>
                 );
@@ -247,10 +240,10 @@ export default function FormReview({ formData = {}, goToStep }: FormReviewProps)
             </main>
             <div className="px-4 py-4 flex justify-between">
                 <Button variant="outline" onClick={handleGoBack} className="w-1/2 mr-2">
-                    Edit
+                    Editar
                 </Button>
                 <Button onClick={() => handleNextStep()} className="w-1/2" disabled={isSubmitting}>
-                    {isSubmitting ? "Sending..." : activeStep === steps.length ? "Send Application" : "Confirm"}
+                    {isSubmitting ? "Enviando..." : activeStep === steps.length ? "Enviar Solicitud" : "Confirmar"}
                 </Button>
             </div>
         </div>
