@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Menu, Users, X, Building2, User, FileText, CheckCircle } from 'lucide-react';
 import ApplicantInfoStep from './_steps/applicant-info';
 import PartnersInfoStep from './_steps/partners-info';
 import CompanyInfoStep from './_steps/company-info';
@@ -11,24 +9,9 @@ import DocumentsStep from './_steps/documents';
 import VerificationStep from './_steps/verification';
 import { useParams } from 'next/navigation';
 
-
-
-
-export const steps = [
-  { id: 1, title: "Información de la solucitud", icon: Users },
-  { id: 2, title: "Documentos Requeridos", icon: FileText },
-  { id: 3, title: "Verificación y Licencias", icon: CheckCircle },
-];
-
-
-
-
-
-
 export default function Dashboard() {
   const [application, setApplication] = useState(null);
   const [activeStep, setActiveStep] = useState(1);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
