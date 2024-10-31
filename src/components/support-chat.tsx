@@ -22,7 +22,7 @@ export function SupportChat() {
       {isOpen ? (
         <div className="bg-white rounded-lg shadow-lg p-4 w-80">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold">Support Chat</h3>
+            <h3 className="font-semibold">Chatea con Soporte</h3>
             <Button variant="ghost" size="sm" onClick={toggleChat}>
               <X className="h-4 w-4" />
             </Button>
@@ -34,15 +34,15 @@ export function SupportChat() {
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message..."
+              placeholder="Escribe tu mensaje..."
             />
-            <Button onClick={sendMessage}>Send</Button>
+            <Button onClick={sendMessage}>Enviar</Button>
           </div>
         </div>
       ) : (
         <Button onClick={toggleChat}>
           <MessageCircle className="h-4 w-4 mr-2" />
-          Support
+          Soporte
         </Button>
       )}
     </div>
