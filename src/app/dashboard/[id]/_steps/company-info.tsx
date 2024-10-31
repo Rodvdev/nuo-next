@@ -27,7 +27,7 @@ export default function CompanyDashboardInfoStep({ application }: CompanyDashboa
   return (
     <div className="bp-6 rounded-lg max-w-md mx-auto text-gray-100">
       {/* Encabezado de la compañía */}
-      <div className="flex items-center mb-4 space-x-3">
+      <div className="flex items-center mb-4 space-x-3 mt-8">
         <Building className="w-6 h-6 text-blue-400" />
         <h1 className="text-xl font-semibold text-blue-300">Perfil Corporativo</h1>
       </div>

@@ -8,7 +8,7 @@ export interface ApplicantStepProps {
 
 export default function ApplicantInfoStep({ application }: ApplicantStepProps) {
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg shadow-lg max-w-sm mx-auto border border-blue-300 relative">
+    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg shadow-lg max-w-sm mx-auto border border-blue-300 relative mb-8">
       {/* Título e Identificación en el encabezado */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-semibold text-blue-900">Perfil del Solicitante</h1>
