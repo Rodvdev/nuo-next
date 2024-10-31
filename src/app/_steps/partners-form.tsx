@@ -73,6 +73,7 @@ export function PartnerInformation({
     const [numPartners, setNumPartners] = useState<number>(partners.length || 0);
     const [partnerToDelete, setPartnerToDelete] = useState<number | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [partnerMessage, setPartnerMessage] = useState<string>('');
 
     // Document number error state
     const [documentErrors, setDocumentErrors] = useState<string[]>(Array(numPartners).fill(''));
@@ -106,6 +107,27 @@ export function PartnerInformation({
         validateForm(partners);
     }, [partners]);
 
+    useEffect(() => {
+        // Mensajes personalizados según el número de socios
+        if (numPartners === 0) {
+            setPartnerMessage('');
+        } else if (numPartners === 1) {
+            setPartnerMessage("¡Para constituir una empresa necesitas al menos 2 socios!");
+        } else if (numPartners === 2) {
+            setPartnerMessage("¡Genial! Tener 2 socios puede ayudar a compartir la carga de trabajo y las decisiones, lo que fortalece la estructura de la empresa.");
+        } else if (numPartners === 3) {
+            setPartnerMessage("¡Excelente! Con 3 socios, pueden combinar sus habilidades y experiencias para enfrentar desafíos y generar nuevas ideas.");
+        } else if (numPartners === 4) {
+            setPartnerMessage("¡Impresionante! Tener 4 socios puede enriquecer la toma de decisiones y promover la diversidad de perspectivas en tu negocio.");
+        } else if (numPartners === 5) {
+            setPartnerMessage("¡Fantástico! Con 5 socios, tendrás un gran equipo para distribuir responsabilidades y fomentar la colaboración, lo cual es clave para el éxito.");
+        } else {
+            setPartnerMessage(`¡Increíble! Con ${numPartners} socios, tu empresa tendrá un gran potencial para innovar y crecer. Recuerda que la buena comunicación y el trabajo en equipo son clave para el éxito.`);
+        }
+    }, [numPartners]);
+
+
+
     const validateForm = (partnersList: Partner[]) => {
         const allFieldsFilled =
             partnersList.length >= 2 &&
@@ -128,28 +150,28 @@ export function PartnerInformation({
     const handlePartnerChange = (index: number, field: keyof Partner, value: string) => {
         const updatedPartners = [...partners];
         updatedPartners[index] = { ...updatedPartners[index], [field]: value };
-    
+
         if (field === "documentType") {
             // Al cambiar el tipo de documento, validar el número de documento
             const documentType = value ?? 'dni'; // Usar el operador de coalescencia nula para un valor predeterminado
             const error = validateDocumentNumber(documentType, updatedPartners[index].documentNumber || ''); // Asegurarse de que el número de documento también sea un string
-            
+
             setDocumentErrors((prevErrors) => {
                 const newErrors = [...prevErrors];
                 newErrors[index] = error; // Update error for the specific partner
                 return newErrors;
             });
         }
-    
+
         if (field === "nationality" && value !== "Otra") {
             updatedPartners[index].otherNationality = "";
         }
-    
+
         setPartners(updatedPartners);
         updateFormData({ partners: updatedPartners });
         validateForm(updatedPartners);
     };
-    
+
 
     const handleDocumentNumberChange = (index: number, value: string) => {
         const updatedPartners = [...partners];
@@ -232,7 +254,22 @@ export function PartnerInformation({
                         value={numPartners || ""}
                         onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, ""); // Solo permite números
-                            setNumPartners(parseInt(value) || 0); // Cambiado para usar el valor filtrado
+                            const newNumPartners = parseInt(value) || 0; // Cambiado para usar el valor filtrado
+                            setNumPartners(newNumPartners);
+
+                            // Set the partner message based on the new number of partners
+                            if (newNumPartners < 2) {
+                                setPartnerMessage("¡Necesitas al menos 2 socios para constituir una empresa!");
+                            } else if (newNumPartners <= 5) {
+                                setPartnerMessage(`¡Genial! Constituir una empresa con ${newNumPartners} socios es una excelente idea, ya que pueden aportar diferentes habilidades y recursos.`);
+                            } else {
+                                setPartnerMessage(`¡Impresionante! Con ${newNumPartners} socios, tu empresa tendrá un gran potencial para innovar y crecer. Recuerda que la buena comunicación y el trabajo en equipo son clave para el éxito.`);
+                            }
+
+                            // Resetear el mensaje si no hay socios
+                            if (newNumPartners === 0) {
+                                setPartnerMessage('');
+                            }
                         }}
                         inputMode="numeric" // Esto mostrará el teclado numérico en dispositivos móviles
                         pattern="[0-9]*" // Asegura que solo se acepten números en navegadores compatibles
@@ -240,7 +277,14 @@ export function PartnerInformation({
                         className="text-2xl max-w-xs text-center mx-auto border-2 border-gray-300 rounded-lg p-4 h-16 focus:outline-none w-full" // Ajustado el ancho y la altura
                     />
 
-                    {numPartners < 2 && (
+                    {partnerMessage && (  // Mostrar el mensaje si existe
+                        <div className="mt-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg">
+                            <p className="text-sm">{partnerMessage}</p>
+                        </div>
+                    )}
+
+
+                    {(!partnerMessage && numPartners < 2) && (
                         <div className="flex items-center bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mt-4 w-full max-w-md rounded-lg">
                             <svg
                                 className="w-5 h-5 text-blue-500 mr-2"
