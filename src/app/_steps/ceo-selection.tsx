@@ -193,7 +193,26 @@ export function CEOSelection({
           />
         </div>
 
-        {documentError && <p className="text-red-500 text-sm">{documentError}</p>}
+        {documentError && (
+  <div className="flex items-center bg-red-100 border-l-4 border-red-500 text-red-700 p-2 mt-2 w-full rounded-lg">
+    <svg
+      className="w-4 h-4 text-red-500 mr-2"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+      />
+    </svg>
+    <p className="text-sm">{documentError}</p>
+  </div>
+)}
+
 
         <div className="relative">
           <Label htmlFor="ceoEmail" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
@@ -219,44 +238,17 @@ export function CEOSelection({
             className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
           />
         </div>
-
-        {requiresLegalRep && (
-          <>
-            <div className="relative">
-              <Label htmlFor="legalRepName" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
-                Nombre del Representante Legal
-              </Label>
-              <Input
-                id="legalRepName"
-                value={ceoInfo.legalRepName || ""}
-                onChange={(e) => handleCeoChange("legalRepName", e.target.value)}
-                className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
-              />
-            </div>
-            <div className="relative">
-              <Label htmlFor="legalRepEmail" className="absolute -top-3 left-3 bg-white px-1 text-sm text-gray-600 z-10">
-                Correo del Representante Legal
-              </Label>
-              <Input
-                id="legalRepEmail"
-                value={ceoInfo.legalRepEmail || ""}
-                onChange={(e) => handleCeoChange("legalRepEmail", e.target.value)}
-                className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none w-full"
-              />
-            </div>
-          </>
-        )}
       </div>
       )}
 
 
       {requiresLegalRep && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-          <h4 className="col-span-2 text-md font-semibold text-red-600 flex items-center">
+          <h4 className="col-span-2 text-md font-semibold text-blue-600 flex items-center">
             {/* SVG de advertencia */}
-            <div className="flex items-center bg-red-100 border-l-4 border-red-500 text-red-700 p-2 rounded-lg">
+            <div className="flex items-center bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-2 rounded-lg">
               <svg
-                className="w-4 h-4 text-red-500 mr-2"
+                className="w-16 h-16 text-blue-500 mr-2"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
