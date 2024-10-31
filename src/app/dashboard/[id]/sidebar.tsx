@@ -1,12 +1,9 @@
-'use client';
-
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { Step } from '@/types/types';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { steps } from './page';
-import { useRouter } from 'next/navigation';
 
 interface SidebarProps {
   activeStep: number;
@@ -15,55 +12,45 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activeStep, setActiveStep, setIsSidebarOpen }: SidebarProps) {
-  const router = useRouter();
-  const sidebarRef = useRef<HTMLDivElement>(null);
-
-  const navigateToStep = (stepId: 1 | 2 | 3) => {
-    const stepRoutes: { 1: string; 2: string; 3: string } = {
-      1: '/dashboard/informacion-solicitud',
-      2: '/dashboard/documentos-requeridos',
-      3: 'showComponent <',
-    };
-    router.push(stepRoutes[stepId]);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-        setIsSidebarOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [setIsSidebarOpen]);
-
   return (
-    <div ref={sidebarRef} className="space-y-4">
-      <h2 className="px-4 text-lg font-semibold">Próximos Pasos</h2>
-      {steps.map((step: Step) => (
-        <Button
-          key={step.id}
-          variant={activeStep === step.id ? 'secondary' : 'ghost'}
-          className="w-full justify-start"
-          onClick={() => {
-            setActiveStep(step.id);
-            setIsSidebarOpen(false);
-            navigateToStep(step.id as 1 | 2 | 3);
-          }}
-        >
-          <step.icon className="mr-2 h-4 w-4" />
-          {step.title}
-          {step.id < activeStep && <Check className="ml-auto h-4 w-4 text-green-500" />}
-        </Button>
-      ))}
-      <div className="px-4">
-        <Button className="w-full" variant="default" onClick={() => setActiveStep((prev) => prev + 1)}>
+    <div className="bg-gray-900 p-6 rounded-r-lg shadow-lg space-y-6 text-white h-full">
+      {/* Encabezado */}
+      <h2 className="text-xl font-semibold text-blue-300 border-b border-gray-700 pb-4">Próximos Pasos</h2>
+
+      {/* Lista de Pasos */}
+      <div className="space-y-2">
+        {steps.map((step: Step) => (
+          <Button
+            key={step.id}
+            variant={activeStep === step.id ? 'secondary' : 'ghost'}
+            className={`w-full justify-start rounded-lg px-4 py-2 transition-colors duration-200 ${
+              activeStep === step.id
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-400 hover:bg-gray-800 hover:text-blue-400'
+            }`}
+            onClick={() => {
+              setActiveStep(step.id);
+              setIsSidebarOpen(false);
+            }}
+          >
+            <step.icon className="mr-3 h-5 w-5 text-blue-400" />
+            <span className="font-medium">{step.title}</span>
+            {step.id < activeStep && <Check className="ml-auto h-5 w-5 text-green-500" />}
+          </Button>
+        ))}
+      </div>
+
+      {/* Botón de Siguiente */}
+      <div className="px-4 pt-4 border-t border-gray-700">
+        <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg py-2" onClick={() => setActiveStep((prev) => prev + 1)}>
           {activeStep < steps.length ? "Siguiente" : "Finalizar"}
         </Button>
       </div>
+
+      {/* Barra de Progreso */}
       <div className="px-4 py-4">
-        <strong>Progreso:</strong>
-        <Progress value={(activeStep / steps.length) * 100} className="w-full" />
+        <strong className="text-gray-300">Progreso:</strong>
+        <Progress value={(activeStep / steps.length) * 100} className="mt-2 bg-gray-700 rounded-full" />
       </div>
     </div>
   );
