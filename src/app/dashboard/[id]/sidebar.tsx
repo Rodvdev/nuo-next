@@ -3,7 +3,7 @@ import { Step } from '@/types/types';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { steps } from './page';
+import { steps } from './stepsConfig';
 
 interface SidebarProps {
   activeStep: number;

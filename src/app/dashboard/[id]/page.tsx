@@ -12,19 +12,6 @@ import VerificationStep from './_steps/verification';
 import { useParams } from 'next/navigation';
 
 
-
-
-export const steps = [
-  { id: 1, title: "Información de la solucitud", icon: Users },
-  { id: 2, title: "Documentos Requeridos", icon: FileText },
-  { id: 3, title: "Verificación y Licencias", icon: CheckCircle },
-];
-
-
-
-
-
-
 export default function Dashboard() {
   const [application, setApplication] = useState(null);
   const [activeStep, setActiveStep] = useState(1);
