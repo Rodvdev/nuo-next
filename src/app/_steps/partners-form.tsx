@@ -75,7 +75,9 @@ export function PartnerInformation({
     const [partnerToDelete, setPartnerToDelete] = useState<number | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [partnerMessage, setPartnerMessage] = useState<string>('');
-    const [isExpanded, setIsExpanded] = useState<boolean[]>(Array(numPartners).fill(true));
+    // Inicializa el estado de expansión siempre como true
+    const [isExpanded, setIsExpanded] = useState<boolean[]>(Array(partners.length).fill(true));
+
 
     const toggleExpand = (index: number) => {
         const updatedExpanded = [...isExpanded];
